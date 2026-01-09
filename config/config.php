@@ -6,9 +6,3 @@
     
     $conn = mysqli_connect($host,$user,$pass,$db);
     $sql = mysqli_select_db($conn,$db);
-    
-    if($sql){
-        echo "success";
-    } else {
-        echo "error";
-    }
