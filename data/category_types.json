@@ -1,0 +1,18 @@
+{
+  "categories": [
+    { "id": "bed", "name": "Bed" },
+    { "id": "chair", "name": "Chair" },
+    { "id": "lamp", "name": "Lamp" },
+    { "id": "mirror", "name": "Mirror" },
+    { "id": "sofa", "name": "Sofa" },
+    { "id": "table", "name": "Table" }
+  ],
+  "types": {
+    "bed": ["Single Bed", "Double Bed", "King Bed"],
+    "chair": ["Office Chair", "Dining Chair", "Rocking Chair"],
+    "lamp": ["Table Lamp", "Floor Lamp", "Wall Lamp"],
+    "mirror": ["Wall Mirror", "Standing Mirror"],
+    "sofa": ["1 Seat Sofa", "2 Seat Sofa", "L Sofa"],
+    "table": ["Dining Table", "Coffee Table", "Office Table"]
+  }
+}
