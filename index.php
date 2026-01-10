@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once(__DIR__ . "/../config/Database.php");
+require_once(__DIR__ . "/config/Database.php");
 
 // Logout logic
 if (isset($_POST['logout'])) {
@@ -21,7 +21,7 @@ if ($userLoggedIn) {
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
+    $row = $result->fetch_assoc() ?: [];
     $stmt->close();
 }
 ?>
@@ -42,8 +42,8 @@ if ($userLoggedIn) {
     <!-- Buttons -->
     <?php if (!$userLoggedIn): ?>
         <!-- Show Login/Register when not logged in -->
-        <a href="./auth/register.php" class="btn btn-info text-white">Register</a>
-        <a href="./auth/login.php" class="btn btn-success text-white">Login</a>
+        <a href="./views/auth/register.php" class="btn btn-info text-white">Register</a>
+        <a href="./views/auth/login.php" class="btn btn-success text-white">Login</a>
     <?php else: ?>
         <!-- Show Logout when logged in -->
         <form method="post" style="display:inline;">
@@ -54,6 +54,15 @@ if ($userLoggedIn) {
     <!-- User info table if logged in -->
     <?php if ($userLoggedIn): ?>
         <table class="table mt-3">
+            <?php if (!empty($row['image'])): ?>
+                <tr>
+                    <th>Profile Image</th>
+                    <td>
+                        <img src="./assets/images/profiles/<?= htmlspecialchars($row['image']) ?>" alt="Profile"
+                            class="rounded-circle" width="100" height="100" style="object-fit: cover;">
+                    </td>
+                </tr>
+            <?php endif; ?>
             <tr>
                 <th>ID</th>
                 <td><?= htmlspecialchars($row['id']) ?></td>
@@ -73,10 +82,6 @@ if ($userLoggedIn) {
             <tr>
                 <th>Phone</th>
                 <td><?= htmlspecialchars($row['phone']) ?></td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td><?= htmlspecialchars($row['password']) ?></td>
             </tr>
             <tr>
                 <th>Created At</th>

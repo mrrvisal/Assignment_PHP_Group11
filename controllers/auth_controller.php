@@ -47,11 +47,27 @@ class AuthController
         $pass = password_hash($_POST['txt_password'], PASSWORD_BCRYPT);
         $phone = trim($_POST['txt_phone']);
 
-        if (User::create($name, $email, $pass, $phone)) {
+        // Handle image upload
+        $imageName = null;
+        if (!empty($_FILES['txt_image']['name'])) {
+            $uploadDir = __DIR__ . "/../../assets/images/profiles/";
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            $originalName = $_FILES['txt_image']['name'];
+            $ext = pathinfo($originalName, PATHINFO_EXTENSION);
+            $imageName = uniqid("profile_") . "." . $ext;
+
+            if (!move_uploaded_file($_FILES['txt_image']['tmp_name'], $uploadDir . $imageName)) {
+                $imageName = null;
+            }
+        }
+
+        if (User::create($name, $email, $pass, $phone, $imageName)) {
             header("Location: ../views/auth/login.php");
             exit();
         } else {
-            // Debug: Show error and go back to registration
             echo "<script>alert('Registration failed! Please try again.'); window.location.href='../views/auth/register.php';</script>";
             exit();
         }
@@ -68,7 +84,7 @@ class AuthController
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['name'] = $user['name'];
             $_SESSION['role'] = $user['role'];
-            header("Location: ../views/index.php");
+            header("Location: ../index.php");
             exit();
         } else {
             echo "❌ Invalid email or password!";

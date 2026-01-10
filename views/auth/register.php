@@ -11,7 +11,7 @@
 
 <body class="container p-5">
     <h1>Register</h1>
-    <form method="POST" action="../../controllers/auth_controller.php">
+    <form method="POST" action="../../controllers/auth_controller.php" enctype="multipart/form-data">
         <table border="0">
             <tr>
                 <td>Name</td>
@@ -28,6 +28,10 @@
             <tr>
                 <td>Phone</td>
                 <td><input id="phone" type="text" name="txt_phone" required class="form-control"></td>
+            </tr>
+            <tr>
+                <td>Profile Image</td>
+                <td><input type="file" name="txt_image" accept="image/*" class="form-control"></td>
             </tr>
             <tr>
                 <td colspan="2">
