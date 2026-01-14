@@ -30,10 +30,6 @@
                 <td><input id="phone" type="text" name="txt_phone" required class="form-control"></td>
             </tr>
             <tr>
-                <td>Profile Image</td>
-                <td><input type="file" name="txt_image" accept="image/*" class="form-control"></td>
-            </tr>
-            <tr>
                 <td colspan="2">
                     <input type="submit" name="btn_register" value="Register" class="btn btn-primary">
                 </td>
