@@ -11,7 +11,7 @@
 
 <body class="container p-5">
     <h1>Register</h1>
-    <form method="POST" action="../../controllers/auth_controller.php" enctype="multipart/form-data">
+    <form method="POST" action="../../controllers/auth_controller.php">
         <table border="0">
             <tr>
                 <td>Name</td>

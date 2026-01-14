@@ -8,12 +8,12 @@ class User
         return Database::getInstance()->getConnection();
     }
 
-    public static function create($name, $email, $password, $phone, $image = null)
+    public static function create($name, $email, $password, $phone)
     {
         $conn = self::getConnection();
-        $stmt = $conn->prepare("INSERT INTO tbl_register (name, email, password, role, phone, image, created_at) 
-                                VALUES (?, ?, ?, 'customer', ?, ?, NOW())");
-        $stmt->bind_param("sssss", $name, $email, $password, $phone, $image);
+        $stmt = $conn->prepare("INSERT INTO tbl_register (name, email, password, role, phone, created_at) 
+                                VALUES (?, ?, ?, 'customer', ?, NOW())");
+        $stmt->bind_param("ssss", $name, $email, $password, $phone);
         if ($stmt->execute()) {
             $stmt->close();
             return true;
