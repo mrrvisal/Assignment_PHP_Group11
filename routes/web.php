@@ -16,3 +16,4 @@ if ($_SERVER['REQUEST_URI'] == '/register' && $_SERVER['REQUEST_METHOD'] == 'POS
 if ($_SERVER['REQUEST_URI'] == '/login' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $controller->login();
 }
+$router->get('/google-login', 'views/auth/google_login.php');

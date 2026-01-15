@@ -34,6 +34,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $controller->resetPassword();
     }
 
+    if (isset($_POST['google_login'])) {
+        $controller = new AuthController();
+        $controller->googleLogin();
+    }
+
+    if (isset($_POST['google_register'])) {
+        $controller = new AuthController();
+        $controller->googleRegister();
+    }
+
+    exit();
+}
+
+// Handle GET requests for Google Login (alternative method)
+if (isset($_GET['google_login'])) {
+    $controller = new AuthController();
+    $controller->googleLogin();
     exit();
 }
 
@@ -58,21 +75,151 @@ class AuthController
 
     public function login()
     {
-        $email = $_POST['txt_email'];
-        $pass = $_POST['txt_password'];
+        $email = trim($_POST['txt_email']);
+        $password = $_POST['txt_password'];
 
-        $user = User::verifyLogin($email, $pass);
+        $user = User::findByEmail($email);
 
-        if ($user) {
+        if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['name'] = $user['name'];
+            $_SESSION['email'] = $user['email'];
             $_SESSION['role'] = $user['role'];
+            $_SESSION['avatar'] = $user['avatar'] ?? '';
+            $_SESSION['logged_in'] = true;
+
+            User::updateLastLogin($user['id']);
+
             header("Location: ../index.php");
             exit();
         } else {
-            echo "❌ Invalid email or password!";
+            echo "<script>alert('Invalid email or password.'); window.location.href='../views/auth/login.php';</script>";
+            exit();
         }
     }
+
+    /**
+     * Google Login Handler
+     * Creates or logs in user with Google account
+     */
+    public function googleLogin()
+    {
+        // Get data from POST
+        $email = $_POST['email'] ?? '';
+        $name = $_POST['name'] ?? '';
+        $avatar = $_POST['avatar'] ?? '';
+        $uid = $_POST['uid'] ?? '';
+
+        // Log received data for debugging
+        error_log("Google Login - Received: email=$email, name=$name, uid=$uid");
+
+        // Validate required fields
+        if (empty($email) || empty($uid)) {
+            $error = "❌ Missing Google account information. Email: $email, UID: $uid";
+            error_log($error);
+            echo $error;
+            exit();
+        }
+
+        try {
+            // Check if user exists
+            $user = User::findByEmail($email);
+
+            if (!$user) {
+                // Create new Google user
+                error_log("Creating new Google user: $email");
+                $created = User::createGoogleUser($name, $email, $avatar, $uid);
+
+                if (!$created) {
+                    $error = "❌ Failed to create Google user account.";
+                    error_log($error);
+                    echo $error;
+                    exit();
+                }
+
+                // Get the newly created user
+                $user = User::findByEmail($email);
+
+                if (!$user) {
+                    $error = "❌ Failed to retrieve created user.";
+                    error_log($error);
+                    echo $error;
+                    exit();
+                }
+
+                error_log("User created successfully with ID: " . $user['id']);
+            } else {
+                error_log("User exists: " . $user['id']);
+            }
+
+            // Set session variables
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['name'] = $user['name'];
+            $_SESSION['email'] = $user['email'];
+            $_SESSION['role'] = $user['role'];
+            $_SESSION['avatar'] = $user['avatar'] ?? '';
+            $_SESSION['auth_provider'] = $user['auth_provider'] ?? 'google';
+            $_SESSION['logged_in'] = true;
+
+            error_log("Session set for user: " . $user['id']);
+
+            // Update last login
+            User::updateLastLogin($user['id']);
+
+            // Clean output buffer and redirect
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+
+            // Determine correct redirect path
+            $scriptPath = $_SERVER['SCRIPT_FILENAME'];
+            if (strpos($scriptPath, 'views/auth') !== false) {
+                header("Location: ../../index.php");
+            } else {
+                header("Location: ../index.php");
+            }
+            exit();
+            
+        } catch (Exception $e) {
+            $error = "❌ Error: " . $e->getMessage();
+            error_log($error);
+            echo $error;
+            exit();
+        }
+    }
+
+    /**
+     * Google Register Handler
+     * Creates new user with Google account (registration only)
+     */
+    public function googleRegister()
+    {
+        // Get data from POST
+        $email = $_POST['email'] ?? '';
+        $name = $_POST['name'] ?? '';
+        $avatar = $_POST['avatar'] ?? '';
+        $uid = $_POST['uid'] ?? '';
+        
+        // Validate required fields
+        if (empty($email) || empty($uid)) {
+            echo "❌ Missing Google account information.";
+            exit();
+        }   
+        // Check if user already exists
+        $user = User::findByEmail($email);
+        if ($user) {
+            echo "❌ User with this email already exists.";
+            exit();
+        }   
+        // Create new Google user
+        if (User::createGoogleUser($name, $email, $avatar, $uid )) {
+            header("Location: ../views/auth/login.php");
+            exit();
+        } else {
+            echo "❌ Registration failed! Please try again.";
+            exit();
+        }
+    }   
 
     public function forgot()
     {

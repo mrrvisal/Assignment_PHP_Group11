@@ -23,6 +23,24 @@ class User
             return false;
         }
     }
+    public static function createGoogleUser($name, $email, $avatar, $uid)
+    {
+        $conn = self::getConnection();
+        $stmt = $conn->prepare("INSERT INTO tbl_register (name, email, password, role, phone, avatar, created_at, otp, otp_expire, firebase_uid, auth_provider, last_login) VALUES (?, ?, '', 'customer', NULL, ?, NOW(), NULL, NULL, ?, 'google', NOW())");
+        $stmt->bind_param("ssss", $name, $email, $avatar, $uid);
+        $success = $stmt->execute();
+        $stmt->close();
+        return $success;
+    }
+    public static function updateLastLogin($id)
+    {
+        $conn = self::getConnection();
+        $stmt = $conn->prepare("UPDATE tbl_register SET last_login = NOW() WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $success = $stmt->execute();
+        $stmt->close();
+        return $success;
+    }
 
     public static function findByEmail($email)
     {

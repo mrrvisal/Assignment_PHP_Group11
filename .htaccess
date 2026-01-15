@@ -1,0 +1,16 @@
+# Enable CORS for Firebase popup
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+</IfModule>
+
+# Disable security headers that block Firebase popup
+<IfModule mod_headers.c>
+    Header unset X-Frame-Options
+    Header unset Cross-Origin-Embedder-Policy
+</IfModule>
+
+# PHP settings
+php_flag display_errors On
+php_value error_reporting E_ALL
+
