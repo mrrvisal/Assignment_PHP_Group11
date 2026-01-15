@@ -1,6 +1,7 @@
 {
     "require": {
         "phpmailer/phpmailer": "^7.0",
-        "kreait/firebase-php": "^5.26"
+        "kreait/firebase-php": "^5.26",
+        "fidele007/bakong-khqr-php": "^1.2"
     }
 }
