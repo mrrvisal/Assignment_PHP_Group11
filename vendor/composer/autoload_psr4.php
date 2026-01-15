@@ -27,6 +27,7 @@ return array(
     'Kreait\\Firebase\\JWT\\' => array($vendorDir . '/kreait/firebase-tokens/src/JWT'),
     'Kreait\\Firebase\\' => array($vendorDir . '/kreait/firebase-php/src/Firebase'),
     'Kreait\\Clock\\' => array($vendorDir . '/kreait/clock/src/Clock'),
+    'KHQR\\' => array($vendorDir . '/fidele007/bakong-khqr-php/src'),
     'JmesPath\\' => array($vendorDir . '/mtdowling/jmespath.php/src'),
     'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
     'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),

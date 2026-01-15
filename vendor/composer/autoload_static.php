@@ -58,6 +58,7 @@ class ComposerStaticInit2185d2f99bcd56787481d9357a5972d3
             'Kreait\\Firebase\\JWT\\' => 20,
             'Kreait\\Firebase\\' => 16,
             'Kreait\\Clock\\' => 13,
+            'KHQR\\' => 5,
         ),
         'J' =>
         array (
@@ -189,6 +190,10 @@ class ComposerStaticInit2185d2f99bcd56787481d9357a5972d3
         'Kreait\\Clock\\' =>
         array (
             0 => __DIR__ . '/..' . '/kreait/clock/src/Clock',
+        ),
+        'KHQR\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/fidele007/bakong-khqr-php/src',
         ),
         'JmesPath\\' =>
         array (
