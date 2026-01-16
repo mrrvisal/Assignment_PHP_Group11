@@ -21,6 +21,7 @@
             </tr>
             <tr>
                 <td>Quantity</td>
+
                 <td><input type="number" name="qty_product" placeholder="Enter Quantity"></td>
             </tr>
             <tr>
