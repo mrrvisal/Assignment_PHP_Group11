@@ -194,9 +194,11 @@
                 </ul>
                 <div class="d-flex align-items-center gap-4">
                     <i data-lucide="search" size="20"></i>
-                    <i data-lucide="user" size="20"></i>
                     <i data-lucide="heart" size="20"></i>
                     <i data-lucide="shopping-cart" size="20"></i>
+                    <a href="login.php">
+                        <i data-lucide="user" size="20"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -265,12 +267,20 @@
     <!-- Products -->
     <section class="container py-5">
         <!-- Tabs -->
+        <td>
+        </td>
         <ul class="nav product-tabs justify-content-center mb-5 border-bottom">
-            <li class="nav-item"><button class="nav-link">Sofa</button></li>
-            <li class="nav-item"><button class="nav-link active">Bed</button></li>
-            <li class="nav-item"><button class="nav-link">Chair</button></li>
-            <li class="nav-item"><button class="nav-link">Mirror</button></li>
-            <li class="nav-item"><button class="nav-link">Table</button></li>
+            <li class="nav-item"><button class="nav-link">All</button></li>
+            <?php
+                    $jsonPath = __DIR__ . '/../data/category_types.json';
+                    $jsonData = file_get_contents($jsonPath);
+                    $data = json_decode($jsonData, true);
+                    ?>
+            <?php foreach ($data['categories'] as $cat): ?>
+            <li class="nav-item"><button class="nav-link">
+                    <?= htmlspecialchars($cat['name'])
+                    ?></button></li>
+            <?php endforeach; ?>
         </ul>
 
         <!-- Filters -->
@@ -298,16 +308,50 @@
         </div>
 
         <!-- Grid -->
+        <?php
+require_once __DIR__ . '/../models/products.php';
+
+$productModel = new Product();
+$products = $productModel->getAll();
+?>
+        <?php if (!empty($products)): ?>
+        <?php foreach ($products as $product): ?>
+        <tr>
+            <td><?= htmlspecialchars($product['brand']) ?></td>
+            <td><?= htmlspecialchars($product['category']) ?></td>
+            <td><?= htmlspecialchars($product['type']) ?></td>
+        </tr>
+        <?php endforeach; ?>
+        <?php endif; ?>
+        <?php
+                        $images = json_decode($product['images'], true);
+                        if (!empty($images)) {
+                            $firstImage = reset($images);
+                            echo '<img src="/../assets/images/products/' . htmlspecialchars($firstImage) . '" class="card-img-top" alt="' . htmlspecialchars($product['name']) . '">';
+                        } else {
+                            echo '<img src="/../assets/images/no-image.png" class="card-img-top" alt="No image">';
+                        }
+                        ?>
         <div class="row g-5">
             <!-- Product Item -->
             <div class="col-sm-6 col-lg-3">
-                <div class="product-card">
+                <div class="product-card" id="<?= htmlspecialchars($product['id']) ?>"
+                    value="<?= htmlspecialchars($product['quantity']) ?>">
                     <div class="img-container">
-                        <img src="https://picsum.photos/seed/p1/500/600" alt="Product">
-                        <button class="btn-quick-view">Quick View</button>
+                        <?php
+                        $images = json_decode($product['images'], true);
+                        if (!empty($images)) {
+                            $firstImage = reset($images);
+                            echo '<img src="../assets/images/products/' . htmlspecialchars($firstImage) . '" class="card-img-top" alt="' . htmlspecialchars($product['name']) . '">';
+                            echo '<button class="btn-quick-view">Quick View</button>';
+                            } else {
+                                echo '<img src="../assets/images/no-image.png" class="card-img-top" alt="No image">';
+                                echo '<button class="btn-quick-view">Quick View</button>';
+                        }
+                        ?>
                     </div>
                     <div class="mt-3">
-                        <h6 class="text-uppercase small fw-bold mb-1">Double Bed</h6>
+                        <h6 class="text-uppercase small fw-bold mb-1"><?= htmlspecialchars($product['name']) ?></h6>
                         <div class="text-warning mb-1" style="font-size: 10px;">
                             <i data-lucide="star" fill="currentColor" size="12"></i>
                             <i data-lucide="star" fill="currentColor" size="12"></i>
@@ -315,65 +359,7 @@
                             <i data-lucide="star" fill="currentColor" size="12"></i>
                             <i data-lucide="star" size="12"></i>
                         </div>
-                        <p class="text-danger fw-bold small">$799</p>
-                    </div>
-                </div>
-            </div>
-            <!-- Repeat Items -->
-            <div class="col-sm-6 col-lg-3">
-                <div class="product-card">
-                    <div class="img-container">
-                        <img src="https://picsum.photos/seed/p2/500/600" alt="Product">
-                        <button class="btn-quick-view">Quick View</button>
-                    </div>
-                    <div class="mt-3">
-                        <h6 class="text-uppercase small fw-bold mb-1">Modern Frame</h6>
-                        <div class="text-warning mb-1" style="font-size: 10px;">
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                        </div>
-                        <p class="text-danger fw-bold small">$899</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-lg-3">
-                <div class="product-card">
-                    <div class="img-container">
-                        <img src="https://picsum.photos/seed/p3/500/600" alt="Product">
-                        <button class="btn-quick-view">Quick View</button>
-                    </div>
-                    <div class="mt-3">
-                        <h6 class="text-uppercase small fw-bold mb-1">Luxury Suite</h6>
-                        <div class="text-warning mb-1" style="font-size: 10px;">
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" size="12"></i>
-                            <i data-lucide="star" size="12"></i>
-                        </div>
-                        <p class="text-danger fw-bold small">$1,299</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-lg-3">
-                <div class="product-card">
-                    <div class="img-container">
-                        <img src="https://picsum.photos/seed/p4/500/600" alt="Product">
-                        <button class="btn-quick-view">Quick View</button>
-                    </div>
-                    <div class="mt-3">
-                        <h6 class="text-uppercase small fw-bold mb-1">Minimalist Bed</h6>
-                        <div class="text-warning mb-1" style="font-size: 10px;">
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" size="12"></i>
-                        </div>
-                        <p class="text-danger fw-bold small">$650</p>
+                        <p class="text-danger fw-bold small">$<?= number_format($product['price'], 2) ?></p>
                     </div>
                 </div>
             </div>
