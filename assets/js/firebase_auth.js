@@ -6,9 +6,9 @@ const firebaseConfig = {
   apiKey: "AIzaSyD6UGlMNla_lBFCTc9rHdO7xLulxMVpb6Y",
   authDomain: "decor-website.firebaseapp.com",
   projectId: "decor-website",
-  storageBucket: "decor-website.appspot.com",
+  storageBucket: "decor-website.firebasestorage.app",
   messagingSenderId: "127088212973",
-  appId: "1:127088212973:web:af78c68c9b841e213145e4",
+  appId: "1:127088212973:web:af78c68c9b841e213145e4"
 };
 
 // Initialize Firebase
