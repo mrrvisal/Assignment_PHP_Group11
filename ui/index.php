@@ -18,6 +18,11 @@
         color: #212529;
     }
 
+    * {
+        color: black;
+        text-decoration: none;
+    }
+
     .navbar-brand {
         font-weight: 700;
         letter-spacing: -0.5px;
@@ -321,8 +326,8 @@ $products = $productModel->getAll();
             <?php if (!empty($products)): ?>
             <?php foreach ($products as $product): ?>
 
-            <div class="col-sm-6 col-lg-3">
-                <div class="product-card bg-danger" id="<?= htmlspecialchars($product['id']) ?>"
+            <div class="col-sm-6 col-lg-2 border rounded ">
+                <div class="product-card" id="<?= htmlspecialchars($product['id']) ?>"
                     data-quantity="<?= htmlspecialchars($product['quantity']) ?>">
 
                     <div class="img-container">
@@ -331,7 +336,7 @@ $products = $productModel->getAll();
                     if (!empty($images)) {
                         $firstImage = reset($images);
                         echo '<img src="../assets/images/products/' . htmlspecialchars($firstImage) . '" 
-                              class="card-img-top h-75" 
+                              class="card-img-top" 
                               alt="' . htmlspecialchars($product['name']) . '">';
                     } else {
                         echo '<img src="../assets/images/no-image.png" 
@@ -339,10 +344,11 @@ $products = $productModel->getAll();
                               alt="No image">';
                     }
                     ?>
-                        <button class="btn-quick-view"><a href="buy.php"> Quick View</a></button>
+                        <button class="btn-quick-view"><a href="buy.php"> Quick
+                                View</a></button>
                     </div>
 
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column align-items-start justify-content-start">
                         <h6>Name: <?= htmlspecialchars($product['name']) ?></h6>
                         <p>Brand: <?= htmlspecialchars($product['brand']) ?></p>
                         <!-- <p>Category: <?= htmlspecialchars($product['category']) ?></p> -->
