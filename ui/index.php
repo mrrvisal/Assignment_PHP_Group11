@@ -18,6 +18,11 @@
         color: #212529;
     }
 
+    * {
+        color: black;
+        text-decoration: none;
+    }
+
     .navbar-brand {
         font-weight: 700;
         letter-spacing: -0.5px;
@@ -187,15 +192,17 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link px-3 active" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="#">Shop</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="#">About Us</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="#">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link px-3 active" href="index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="shop.php">Shop</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="about.php">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="contact.php">Contact</a></li>
                 </ul>
                 <div class="d-flex align-items-center gap-4">
                     <i data-lucide="search" size="20"></i>
                     <i data-lucide="heart" size="20"></i>
-                    <i data-lucide="shopping-cart" size="20"></i>
+                    <a href="cart.php">
+                        <i data-lucide="shopping-cart" size="20"></i>
+                    </a>
                     <a href="login.php">
                         <i data-lucide="user" size="20"></i>
                     </a>
@@ -314,55 +321,54 @@ require_once __DIR__ . '/../models/products.php';
 $productModel = new Product();
 $products = $productModel->getAll();
 ?>
-        <?php if (!empty($products)): ?>
-        <?php foreach ($products as $product): ?>
-        <tr>
-            <td><?= htmlspecialchars($product['brand']) ?></td>
-            <td><?= htmlspecialchars($product['category']) ?></td>
-            <td><?= htmlspecialchars($product['type']) ?></td>
-        </tr>
-        <?php endforeach; ?>
-        <?php endif; ?>
-        <?php
-                        $images = json_decode($product['images'], true);
-                        if (!empty($images)) {
-                            $firstImage = reset($images);
-                            echo '<img src="/../assets/images/products/' . htmlspecialchars($firstImage) . '" class="card-img-top" alt="' . htmlspecialchars($product['name']) . '">';
-                        } else {
-                            echo '<img src="/../assets/images/no-image.png" class="card-img-top" alt="No image">';
-                        }
-                        ?>
+
         <div class="row g-5">
-            <!-- Product Item -->
-            <div class="col-sm-6 col-lg-3">
+            <?php if (!empty($products)): ?>
+            <?php foreach ($products as $product): ?>
+
+            <div class="col-sm-6 col-lg-2 border rounded ">
                 <div class="product-card" id="<?= htmlspecialchars($product['id']) ?>"
-                    value="<?= htmlspecialchars($product['quantity']) ?>">
+                    data-quantity="<?= htmlspecialchars($product['quantity']) ?>">
+
                     <div class="img-container">
                         <?php
-                        $images = json_decode($product['images'], true);
-                        if (!empty($images)) {
-                            $firstImage = reset($images);
-                            echo '<img src="../assets/images/products/' . htmlspecialchars($firstImage) . '" class="card-img-top" alt="' . htmlspecialchars($product['name']) . '">';
-                            echo '<button class="btn-quick-view">Quick View</button>';
-                            } else {
-                                echo '<img src="../assets/images/no-image.png" class="card-img-top" alt="No image">';
-                                echo '<button class="btn-quick-view">Quick View</button>';
-                        }
-                        ?>
+                    $images = json_decode($product['images'], true);
+                    if (!empty($images)) {
+                        $firstImage = reset($images);
+                        echo '<img src="../assets/images/products/' . htmlspecialchars($firstImage) . '" 
+                              class="card-img-top" 
+                              alt="' . htmlspecialchars($product['name']) . '">';
+                    } else {
+                        echo '<img src="../assets/images/no-image.png" 
+                              class="card-img-top" 
+                              alt="No image">';
+                    }
+                    ?>
+                        <button class="btn-quick-view"><a href="buy.php"> Quick
+                                View</a></button>
                     </div>
-                    <div class="mt-3">
-                        <h6 class="text-uppercase small fw-bold mb-1"><?= htmlspecialchars($product['name']) ?></h6>
-                        <div class="text-warning mb-1" style="font-size: 10px;">
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" fill="currentColor" size="12"></i>
-                            <i data-lucide="star" size="12"></i>
-                        </div>
-                        <p class="text-danger fw-bold small">$<?= number_format($product['price'], 2) ?></p>
+
+                    <div class="card-body d-flex flex-column align-items-start justify-content-start">
+                        <h6>Name: <?= htmlspecialchars($product['name']) ?></h6>
+                        <p>Brand: <?= htmlspecialchars($product['brand']) ?></p>
+                        <!-- <p>Category: <?= htmlspecialchars($product['category']) ?></p> -->
+                        <!-- <p>Type: <?= htmlspecialchars($product['type']) ?></p> -->
+                        <p>Price: $<?= htmlspecialchars($product['price']) ?></p>
+                        <!-- <p>Stock: <?= htmlspecialchars($product['quantity']) ?></p> -->
                     </div>
+
                 </div>
             </div>
+
+            <?php endforeach; ?>
+            <?php else: ?>
+            <p>No products found.</p>
+            <?php endif; ?>
+        </div>
+
+        </div>
+        </div>
+        </div>
         </div>
     </section>
 

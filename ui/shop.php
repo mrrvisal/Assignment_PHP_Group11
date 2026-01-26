@@ -206,10 +206,10 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Shop</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">About Us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link px-3 active" href="index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="shop.php">Shop</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="about.php">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="contact.php">Contact</a></li>
                 </ul>
                 <div class="d-flex align-items-center gap-3">
                     <a href="#" class="text-dark"><i class="bi bi-search"></i></a>

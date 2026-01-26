@@ -222,10 +222,10 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link mx-2" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link mx-2" href="#">Shop</a></li>
-                    <li class="nav-item"><a class="nav-link mx-2" href="#">Collections</a></li>
-                    <li class="nav-item"><a class="nav-link mx-2" href="#">About</a></li>
+                    <li class="nav-item"><a class="nav-link px-3 active" href="index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="shop.php">Shop</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="about.php">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="contact.php">Contact</a></li>
                 </ul>
                 <div class="d-flex align-items-center gap-4">
                     <a href="#" class="text-dark"><i data-lucide="search" size="20"></i></a>
@@ -332,7 +332,7 @@
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <button class="btn btn-luxury w-100">Add to Cart</button>
+                                <button class="btn btn-luxury w-100"><a href="cart.php">Add to Cart</a></button>
                             </div>
                             <div class="col-12">
                                 <button class="btn btn-outline-luxury w-100">Quick Buy</button>
