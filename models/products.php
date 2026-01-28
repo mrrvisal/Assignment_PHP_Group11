@@ -82,4 +82,34 @@ class Product
         error_log("Delete query result: " . ($result ? "true" : "false") . ", Affected rows: " . $stmt->affected_rows);
         return $result;
     }
+    protected $pdo;
+/** 
+     * Get random products (default 4), optionally excluding one product id
+     */
+    public function getRandom(int $limit = 4, ?int $excludeId = null): array
+    {
+        if ($excludeId) {
+            $stmt = $this->pdo->prepare("
+                SELECT id, name, price, images
+                FROM products
+                WHERE id <> :excludeId
+                ORDER BY RAND()
+                LIMIT :limit
+            ");
+            $stmt->bindValue(':excludeId', $excludeId, PDO::PARAM_INT);
+        } else {
+            $stmt = $this->pdo->prepare("
+                SELECT id, name, price, images
+                FROM products
+                ORDER BY RAND()
+                LIMIT :limit
+            ");
+        }
+
+        // You must bind LIMIT as integer with PDO::PARAM_INT
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
 }

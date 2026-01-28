@@ -88,19 +88,20 @@ if (isset($_SESSION['user_id'])) {
     <div class="login-card text-center">
         <h4 class="mb-3">Sign in with email</h4>
         <p class="text-muted">Make a new doc to bring your words, data, and teams together. For free</p>
-        <form>
+        <form method="POST" action="../../controllers/auth_controller.php">
             <div class="mb-3 text-start">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" placeholder="you@example.com">
+                <input type="email" class="form-control" name="txt_email" required placeholder="Enter your email">
             </div>
             <div class="mb-3 text-start">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" placeholder="••••••••">
+                <input type="password" class="form-control" name="txt_password" required
+                    placeholder="Enter your password">
             </div>
             <div class="mb-3 text-end">
-                <a href="#" class="text-decoration-none">Forgot password?</a>
+                <a href="forgot_password.php" class="text-decoration-none">Forgot password?</a>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Get Started</button>
+            <button type="submit" class="btn btn-primary w-100" name="btn_login" value="Login">Login</button>
         </form>
         <hr>
         <p class="text-muted">Or sign in with</p>
@@ -111,7 +112,7 @@ if (isset($_SESSION['user_id'])) {
                 Login with Google
             </button>
         </div>
-        <p class="text-muted">It's you have account? <a href="./register.php">Register</a></p>
+        <p class="text-muted">It's you have account? <a href="register.php">Register</a></p>
     </div>
     <!-- Firebase SDK Scripts (compat versions for traditional script tags) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>

@@ -84,7 +84,7 @@
 
 <body>
     <div class="register-container">
-        <h1 class="text-center mb-4">📝 Register</h1>
+        <h1 class="text-center mb-4">Create Account</h1>
 
         <form method="POST" action="../../controllers/auth_controller.php">
             <div class="mb-3">

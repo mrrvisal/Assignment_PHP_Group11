@@ -5,10 +5,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Luxury — Contact</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons (via CDN) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+    </script>
     <style>
     :root {
         --luxury-bg: #ffffff;
@@ -19,20 +24,43 @@
     }
 
     body {
-        background: var(--luxury-bg);
-        color: var(--luxury-text);
+        font-family: 'Inter', sans-serif;
+        color: var(--luxury-black);
+        overflow-x: hidden;
     }
 
-    .navbar {
-        border-bottom: 1px solid var(--luxury-border);
+    h1,
+    h2,
+    h3,
+    .navbar-brand {
+        font-family: 'Playfair Display', serif;
+
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+        font-weight: 700;
     }
 
     .nav-link {
-        color: var(--luxury-text);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 1px;
+        color: var(--luxury-black) !important;
+        margin: 0 10px;
     }
 
-    .nav-link.active {
-        font-weight: 600;
+    .navbar .nav-link {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 1px;
+    }
+
+    .navbar i {
+        cursor: pointer;
     }
 
     .hero {
@@ -111,27 +139,41 @@
 
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg bg-white">
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">Luxury</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+            <a class="navbar-brand" href="index.php">LUXURY</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navMain">
-                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link px-3 active" href="index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="shop.php">Shop</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="about.php">About Us</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="contact.php">Contact</a></li>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link px-3 active" href="index.php">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="shop.php">Shop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="about.php">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="contact.php">Contact</a>
+                    </li>
                 </ul>
-                <div class="d-flex gap-3">
-                    <a href="#" class="text-dark"><i class="bi bi-search"></i></a>
-                    <a href="#" class="text-dark"><i class="bi bi-person"></i></a>
-                    <a href="#" class="text-dark position-relative">
-                        <i class="bi bi-bag"></i>
-                        <span
-                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">0</span>
+
+                <div class="d-flex align-items-center gap-4">
+                    <i data-lucide="search" size="20"></i>
+                    <i data-lucide="heart" size="20"></i>
+
+                    <a href="cart.php" class="text-dark position-relative">
+                        <i data-lucide="shopping-cart" size="20"></i>
+                    </a>
+
+                    <a href="login.php" class="text-dark">
+                        <i data-lucide="user" size="20"></i>
                     </a>
                 </div>
             </div>
@@ -247,8 +289,11 @@
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
+    <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    lucide.createIcons();
+    </script>
 </body>
 
 </html>
