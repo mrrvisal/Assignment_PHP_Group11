@@ -6,13 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUXURY | Minimalist Furniture Store</title>
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <!-- Google Fonts -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons (via CDN) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+    </script>
     <style>
     :root {
         --luxury-black: #1a1a1a;
@@ -34,11 +36,7 @@
         font-family: 'Playfair Display', serif;
     }
 
-    .navbar {
-        background-color: white;
-        border-bottom: 1px solid #eee;
-        padding: 1rem 0;
-    }
+
 
     .navbar-brand {
         font-size: 1.5rem;
@@ -53,6 +51,17 @@
         letter-spacing: 1px;
         color: var(--luxury-black) !important;
         margin: 0 10px;
+    }
+
+    .navbar .nav-link {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 1px;
+    }
+
+    .navbar i {
+        cursor: pointer;
     }
 
     /* Hero Carousel */
@@ -197,27 +206,41 @@
 
 <body>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg sticky-top">
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="#">LUXURY</a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="navbar-brand" href="index.php">LUXURY</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link px-3 active" href="index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="shop.php">Shop</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="about.php">About Us</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="contact.php">Contact</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 active" href="index.php">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="shop.php">Shop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="about.php">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="contact.php">Contact</a>
+                    </li>
                 </ul>
-                <div class="d-flex align-items-center gap-3">
-                    <a href="#" class="text-dark"><i class="bi bi-search"></i></a>
-                    <a href="#" class="text-dark"><i class="bi bi-person"></i></a>
-                    <a href="#" class="text-dark"><i class="bi bi-heart"></i></a>
-                    <a href="#" class="text-dark position-relative">
-                        <i class="bi bi-bag"></i>
-                        <span class="badge rounded-pill bg-dark cart-badge">0</span>
+
+                <div class="d-flex align-items-center gap-4">
+                    <i data-lucide="search" size="20"></i>
+                    <i data-lucide="heart" size="20"></i>
+
+                    <a href="cart.php" class="text-dark position-relative">
+                        <i data-lucide="shopping-cart" size="20"></i>
+                    </a>
+
+                    <a href="login.php" class="text-dark">
+                        <i data-lucide="user" size="20"></i>
                     </a>
                 </div>
             </div>
@@ -277,8 +300,65 @@
         </div>
 
         <!-- Product Grid -->
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="productGrid">
-            <!-- Products will be injected here by JS -->
+        <?php
+require_once __DIR__ . '/../models/products.php';
+
+$productModel = new Product();
+$products = $productModel->getAll();
+?>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <?php if (!empty($products)): ?>
+            <?php foreach ($products as $product): ?>
+
+            <div class="col">
+                <div class="product-card" id="<?= htmlspecialchars($product['id']) ?>"
+                    data-quantity="<?= htmlspecialchars($product['quantity']) ?>">
+
+                    <div class="product-img-container">
+                        <?php
+                        $images = json_decode($product['images'], true);
+                        if (!empty($images)) {
+                            $firstImage = reset($images);
+                            echo '<img src="../assets/images/products/' . htmlspecialchars($firstImage) . '" 
+                                  alt="' . htmlspecialchars($product['name']) . '">';
+                        } else {
+                            echo '<img src="../assets/images/no-image.png" 
+                                  alt="No image">';
+                        }
+                        ?>
+                    </div>
+
+                    <div class="text-center">
+                        <h3 class="product-title">
+                            <?= htmlspecialchars($product['name']) ?>
+                        </h3>
+
+                        <div class="product-price">
+                            <?php if (!empty($product['old_price'])): ?>
+                            <span class="old-price">
+                                $<?= htmlspecialchars($product['old_price']) ?>
+                            </span>
+                            <?php endif; ?>
+
+                            <span class="new-price">
+                                $<?= htmlspecialchars($product['price']) ?>
+                            </span>
+                        </div>
+
+                        <a href="buy.php?id=<?= htmlspecialchars($product['id']) ?>"
+                            class="btn btn-dark rounded-0 px-3 py-1 mt-2 small">
+                            Quick View
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <?php endforeach; ?>
+            <?php else: ?>
+            <p class="text-center">No products found.</p>
+            <?php endif; ?>
         </div>
 
         <!-- Pagination -->
@@ -354,118 +434,8 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Custom Script -->
     <script>
-    const products = [{
-            id: 1,
-            name: 'Velvet Sofa Gray',
-            category: 'Sofa',
-            price: 1200,
-            oldPrice: 1500,
-            img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=400&q=80'
-        },
-        {
-            id: 2,
-            name: 'Double BED Ash',
-            category: 'Bed',
-            price: 700,
-            oldPrice: 900,
-            img: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=400&q=80'
-        },
-        {
-            id: 3,
-            name: 'Oak Side Table',
-            category: 'Table',
-            price: 350,
-            oldPrice: 450,
-            img: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=400&q=80'
-        },
-        {
-            id: 4,
-            name: 'Nordic Lounge Chair',
-            category: 'Chair',
-            price: 550,
-            oldPrice: 650,
-            img: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=400&q=80'
-        },
-        {
-            id: 5,
-            name: 'Circular Wall Mirror',
-            category: 'Mirror',
-            price: 180,
-            oldPrice: 220,
-            img: 'https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=400&q=80'
-        },
-        {
-            id: 6,
-            name: 'Luxury King Bed',
-            category: 'Bed',
-            price: 1500,
-            oldPrice: 1800,
-            img: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=400&q=80'
-        },
-        {
-            id: 7,
-            name: 'Modern Dining Chair',
-            category: 'Chair',
-            price: 220,
-            oldPrice: 300,
-            img: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=400&q=80'
-        },
-        {
-            id: 8,
-            name: 'Marble Coffee Table',
-            category: 'Table',
-            price: 890,
-            oldPrice: 1100,
-            img: 'https://images.unsplash.com/photo-1577140917449-399e98fd5924?auto=format&fit=crop&w=400&q=80'
-        }
-    ];
-
-    function renderProducts(filter = 'All') {
-        const grid = document.getElementById('productGrid');
-        grid.innerHTML = '';
-
-        const filteredProducts = filter === 'All' ?
-            products :
-            products.filter(p => p.category === filter);
-
-        filteredProducts.forEach(product => {
-            const card = `
-                    <div class="col">
-                        <div class="product-card">
-                            <div class="product-img-container">
-                                <img src="${product.img}" alt="${product.name}">
-                            </div>
-                            <div class="text-center">
-                                <h3 class="product-title">${product.name}</h3>
-                                <div class="product-price">
-                                    <span class="old-price">$${product.oldPrice}</span>
-                                    <span class="new-price">$${product.price}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            grid.innerHTML += card;
-        });
-    }
-
-    // Initialize grid
-    renderProducts();
-
-    // Handle filtering
-    document.getElementById('categoryFilter').addEventListener('click', (e) => {
-        if (e.target.classList.contains('filter-btn')) {
-            // Remove active class from all
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            // Add active to current
-            e.target.classList.add('active');
-            // Render filtered products
-            renderProducts(e.target.dataset.category);
-        }
-    });
+    lucide.createIcons();
     </script>
 </body>
 

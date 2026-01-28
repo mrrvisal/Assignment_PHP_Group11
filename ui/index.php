@@ -7,16 +7,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Luxury Furniture</title>
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Lucide Icons (via CDN) -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+    </script>
     <style>
+    :root {
+        --luxury-black: #1a1a1a;
+        --luxury-gray: #f8f9fa;
+        --luxury-text-muted: #6c757d;
+        --accent-color: #004d40;
+    }
+
     body {
         font-family: 'Inter', sans-serif;
-        color: #212529;
+        color: var(--luxury-black);
+        overflow-x: hidden;
     }
+
 
     * {
         color: black;
@@ -35,6 +48,17 @@
         align-items: center;
         justify-content: center;
         position: relative;
+    }
+
+    .navbar .nav-link {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 1px;
+    }
+
+    .navbar i {
+        cursor: pointer;
     }
 
     .hero-text {
@@ -80,9 +104,25 @@
         padding-bottom: 1rem;
     }
 
+    .nav-link {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 1px;
+        color: var(--luxury-black) !important;
+        margin: 0 10px;
+    }
+
     .product-tabs .nav-link.active {
         color: #000;
         border-bottom: 2px solid #000;
+    }
+
+    .navbar .nav-link {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 1px;
     }
 
     .product-card {
@@ -107,6 +147,27 @@
 
     .product-card:hover .img-container img {
         transform: scale(1.05);
+    }
+
+    .product-title {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+
+    .product-brand {
+        font-size: 0.75rem;
+    }
+
+    .product-price {
+        font-size: 0.9rem;
+    }
+
+    .btn-quick-view {
+        text-align: center;
+        color: #000;
+        text-decoration: none;
     }
 
     .btn-quick-view {
@@ -178,32 +239,57 @@
     .social-icons i:hover {
         color: #000;
     }
+
+    h1,
+    h2,
+    h3,
+    .navbar-brand {
+        font-family: 'Playfair Display', serif;
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+        font-weight: 700;
+    }
     </style>
 </head>
 
 <body>
 
-    <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="#">LUXURY</a>
+            <a class="navbar-brand" href="index.php">LUXURY</a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link px-3 active" href="index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="shop.php">Shop</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="about.php">About Us</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="contact.php">Contact</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 active" href="index.php">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="shop.php">Shop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="about.php">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="contact.php">Contact</a>
+                    </li>
                 </ul>
+
                 <div class="d-flex align-items-center gap-4">
                     <i data-lucide="search" size="20"></i>
                     <i data-lucide="heart" size="20"></i>
-                    <a href="cart.php">
+
+                    <a href="cart.php" class="text-dark position-relative">
                         <i data-lucide="shopping-cart" size="20"></i>
                     </a>
-                    <a href="login.php">
+
+                    <a href="../views/auth/login.php" class="text-dark">
                         <i data-lucide="user" size="20"></i>
                     </a>
                 </div>
@@ -213,9 +299,44 @@
 
     <!-- Hero -->
     <section class="hero-section">
-        <div class="text-center">
-            <h1 class="display-1 hero-text text-secondary">Auto scroll</h1>
-            <p class="text-muted mt-3">Discover our curated collection of luxury furniture pieces.</p>
+        <!-- Hero Carousel -->
+        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="container h-100 d-flex align-items-center">
+                        <div class="carousel-caption d-none d-md-block">
+                            <span class="text-uppercase text-muted ls-1 small fw-bold">New Collection 2024</span>
+                            <h2>Minimalist Living</h2>
+                            <p class="w-50">Discover our new range of artisan crafted furniture designed for the modern
+                                sanctuary.</p>
+                            <button class="btn btn-dark rounded-0 px-4 py-2 mt-3 text-uppercase small ls-1">Discover
+                                More</button>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1600&q=80"
+                            class="d-block w-100 opacity-25 position-absolute top-0 start-0 h-100"
+                            style="object-fit:cover; z-index:-1" alt="...">
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="container h-100 d-flex align-items-center">
+                        <div class="carousel-caption d-none d-md-block">
+                            <span class="text-uppercase text-muted ls-1 small fw-bold">Scandinavian Design</span>
+                            <h2>The Art of Comfort</h2>
+                            <p class="w-50">Functional elegance meets timeless aesthetics in every piece we create.</p>
+                            <button class="btn btn-dark rounded-0 px-4 py-2 mt-3 text-uppercase small ls-1">Shop
+                                Now</button>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1600&q=80"
+                            class="d-block w-100 opacity-25 position-absolute top-0 start-0 h-100"
+                            style="object-fit:cover; z-index:-1" alt="...">
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -326,36 +447,37 @@ $products = $productModel->getAll();
             <?php if (!empty($products)): ?>
             <?php foreach ($products as $product): ?>
 
-            <div class="col-sm-6 col-lg-2 border rounded ">
-                <div class="product-card" id="<?= htmlspecialchars($product['id']) ?>"
-                    data-quantity="<?= htmlspecialchars($product['quantity']) ?>">
+            <div class="col-sm-6 col-md-4 col-lg-3">
+                <div class="product-card">
 
                     <div class="img-container">
                         <?php
-                    $images = json_decode($product['images'], true);
-                    if (!empty($images)) {
-                        $firstImage = reset($images);
-                        echo '<img src="../assets/images/products/' . htmlspecialchars($firstImage) . '" 
-                              class="card-img-top" 
-                              alt="' . htmlspecialchars($product['name']) . '">';
-                    } else {
-                        echo '<img src="../assets/images/no-image.png" 
-                              class="card-img-top" 
-                              alt="No image">';
-                    }
-                    ?>
-                        <button class="btn-quick-view"><a href="buy.php"> Quick
-                                View</a></button>
+            $images = json_decode($product['images'], true);
+            if (!empty($images)) {
+                $firstImage = reset($images);
+                echo '<img src="../assets/images/products/' . htmlspecialchars($firstImage) . '" 
+                      alt="' . htmlspecialchars($product['name']) . '">';
+            } else {
+                echo '<img src="../assets/images/no-image.png" alt="No image">';
+            }
+            ?>
+
+                        <a href="buy.php?id=<?= htmlspecialchars($product['id']) ?>" class="btn-quick-view">
+                            Quick View
+                        </a>
                     </div>
 
-                    <div class="card-body d-flex flex-column align-items-start justify-content-start">
-                        <h6>Name: <?= htmlspecialchars($product['name']) ?></h6>
-                        <p>Brand: <?= htmlspecialchars($product['brand']) ?></p>
-                        <!-- <p>Category: <?= htmlspecialchars($product['category']) ?></p> -->
-                        <!-- <p>Type: <?= htmlspecialchars($product['type']) ?></p> -->
-                        <p>Price: $<?= htmlspecialchars($product['price']) ?></p>
-                        <!-- <p>Stock: <?= htmlspecialchars($product['quantity']) ?></p> -->
-                    </div>
+                    <h6 class="product-title mt-3">
+                        <?= htmlspecialchars($product['name']) ?>
+                    </h6>
+
+                    <p class="product-brand small text-muted mb-1">
+                        <?= htmlspecialchars($product['brand']) ?>
+                    </p>
+
+                    <p class="product-price fw-bold">
+                        $<?= htmlspecialchars($product['price']) ?>
+                    </p>
 
                 </div>
             </div>
@@ -486,7 +608,6 @@ $products = $productModel->getAll();
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // Initialize icons
     lucide.createIcons();
     </script>
 </body>

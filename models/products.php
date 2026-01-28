@@ -34,11 +34,19 @@ class Product
         return $stmt->execute();
     }
 
-    public function getAll()
+    public function getAll($category = null)
     {
-        $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
-        $result = $this->conn->query($sql);
-        return $result->fetch_all(MYSQLI_ASSOC);
+        if ($category) {
+            $sql = "SELECT * FROM {$this->table} WHERE category = ? ORDER BY id DESC";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("s", $category);
+            $stmt->execute();
+            return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        } else {
+            $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
+            $result = $this->conn->query($sql);
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
     }
 
     public function getById($id)
@@ -82,4 +90,35 @@ class Product
         error_log("Delete query result: " . ($result ? "true" : "false") . ", Affected rows: " . $stmt->affected_rows);
         return $result;
     }
+    protected $pdo;
+/** 
+     * Get random products (default 4), optionally excluding one product id
+     */
+    public function getRandom(int $limit = 4, ?int $excludeId = null): array
+    {
+        if ($excludeId) {
+            $stmt = $this->pdo->prepare("
+                SELECT id, name, price, images
+                FROM products
+                WHERE id <> :excludeId
+                ORDER BY RAND()
+                LIMIT :limit
+            ");
+            $stmt->bindValue(':excludeId', $excludeId, PDO::PARAM_INT);
+        } else {
+            $stmt = $this->pdo->prepare("
+                SELECT id, name, price, images
+                FROM products
+                ORDER BY RAND()
+                LIMIT :limit
+            ");
+        }
+
+        // You must bind LIMIT as integer with PDO::PARAM_INT
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+    
 }
