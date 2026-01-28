@@ -313,7 +313,8 @@ $products = $productModel->getAll();
 
             <div class="col">
                 <div class="product-card" id="<?= htmlspecialchars($product['id']) ?>"
-                    data-quantity="<?= htmlspecialchars($product['quantity']) ?>">
+                    data-quantity="<?= htmlspecialchars($product['quantity']) ?>"
+                    data-category="<?= htmlspecialchars($product['category']) ?>">
 
                     <div class="product-img-container">
                         <?php
@@ -436,6 +437,32 @@ $products = $productModel->getAll();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     lucide.createIcons();
+
+    // Category filter functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const productCards = document.querySelectorAll('.product-card');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                // Filter products
+                productCards.forEach(card => {
+                    const productCategory = card.getAttribute('data-category');
+                    if (category === 'All' || productCategory === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    });
     </script>
 </body>
 
