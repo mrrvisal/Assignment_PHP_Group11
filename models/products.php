@@ -34,11 +34,19 @@ class Product
         return $stmt->execute();
     }
 
-    public function getAll()
+    public function getAll($category = null)
     {
-        $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
-        $result = $this->conn->query($sql);
-        return $result->fetch_all(MYSQLI_ASSOC);
+        if ($category) {
+            $sql = "SELECT * FROM {$this->table} WHERE category = ? ORDER BY id DESC";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("s", $category);
+            $stmt->execute();
+            return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        } else {
+            $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
+            $result = $this->conn->query($sql);
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
     }
 
     public function getById($id)
@@ -112,4 +120,5 @@ class Product
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
+    
 }
