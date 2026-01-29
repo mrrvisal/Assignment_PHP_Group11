@@ -6,7 +6,7 @@ require_once(__DIR__ . "/config/Database.php");
 if (isset($_POST['logout'])) {
     session_unset();
     session_destroy();
-    header("Location: index.php"); // redirect to self after logout
+    header("Location: ../ui/index.php"); // redirect to self after logout
     exit();
 }
 

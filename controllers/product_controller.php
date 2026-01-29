@@ -31,7 +31,7 @@ if (isset($_POST['btn_delete'])) {
 
     if ($productModel->delete($delete_id)) {
         error_log("Delete successful for ID: " . $delete_id);
-        header("Location: ../admin/index.php");
+        header("Location: ../ui/admin.php");
         exit();
     } else {
         error_log("Delete failed for ID: " . $delete_id);
@@ -41,6 +41,44 @@ if (isset($_POST['btn_delete'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Handle bulk delete
+    if (isset($_POST['btn_bulk_delete'])) {
+        $delete_ids = $_POST['bulk_delete_ids'] ?? [];
+        if (!empty($delete_ids)) {
+            foreach ($delete_ids as $delete_id) {
+                error_log("Attempting to delete product ID: " . $delete_id);
+
+                // Get product to delete its images
+                $product = $productModel->getById($delete_id);
+                if ($product) {
+                    $uploadDir = __DIR__ . "/../assets/images/products/";
+                    $images = json_decode($product['images'] ?? '[]', true);
+
+                    // Delete each image file
+                    if (!empty($images)) {
+                        foreach ($images as $image) {
+                            $imagePath = $uploadDir . $image;
+                            if (file_exists($imagePath)) {
+                                if (unlink($imagePath)) {
+                                    error_log("Deleted image: " . $imagePath);
+                                } else {
+                                    error_log("Failed to delete image: " . $imagePath);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!$productModel->delete($delete_id)) {
+                    error_log("Delete failed for ID: " . $delete_id);
+                    echo "❌ Error deleting product ID: " . $delete_id;
+                }
+            }
+            header("Location: ../ui/admin.php");
+            exit();
+        }
+    }
+
     $name = $_POST['txt_name_product'] ?? '';
     $price = $_POST['price_product'] ?? 0;
     $quantity = $_POST['qty_product'] ?? 0;
@@ -111,7 +149,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         if ($productModel->update($edit_id, $data)) {
-            header("Location: ../admin/index.php");
+            header("Location: ../ui/admin.php");
             exit();
         } else {
             echo "❌ Error updating product.";
@@ -121,7 +159,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $data['images'] = json_encode($imageNames);
 
         if ($productModel->create($data)) {
-            header("Location: ../admin/index.php");
+            header("Location: ../ui/admin.php");
         } else {
             echo "❌ Error adding product.";
         }

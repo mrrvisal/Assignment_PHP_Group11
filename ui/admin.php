@@ -1,3 +1,79 @@
+<?php
+try {
+    require_once __DIR__ . '/../models/products.php';
+
+    $jsonData = file_get_contents(__DIR__ . '/../data/category_types.json');
+    $data = json_decode($jsonData, true);
+    $categories = $data['categories'];
+
+    $productModel = new Product();
+
+    // Get filters from GET
+    $search = $_GET['search'] ?? '';
+    $category = $_GET['category'] ?? '';
+    $status = $_GET['status'] ?? '';
+    $price = $_GET['price'] ?? '';
+    $store = $_GET['store'] ?? '';
+    $page = (int)($_GET['page'] ?? 1);
+    $limit = 10;$offset = ($page - 1) * $limit;
+
+    // For simplicity, get all products and filter in PHP
+    $allProducts = $productModel->getAll();
+
+    // Apply filters
+    $filteredProducts = array_filter($allProducts, function($product) use ($search, $category, $status, $price) {
+        if ($search && stripos($product['name'], $search) === false) return false;
+        if ($category && $product['category'] !== $category) return false;
+        if ($status && $product['status'] !== $status) return false;
+        if ($price) {
+            list($min, $max) = explode('-', $price);        if ($product['price'] < $min || $product['price'] > $max) return false;
+        }
+        // Store filter not implemented, perhaps skip or add logic
+        return true;
+    });
+
+    // Pagination
+    $total = count($filteredProducts);
+    $totalPages = ceil($total / $limit);
+    $products = array_slice($filteredProducts, $offset, $limit);
+
+    // Count for categories
+    $categoryCounts = [];
+    foreach ($allProducts as $p) {
+        $cat = $p['category'];
+        $categoryCounts[$cat] = ($categoryCounts[$cat] ?? 0) + 1;
+    }
+    foreach ($categories as &$cat) {
+        $cat['count'] = $categoryCounts[$cat['id']] ?? 0;
+    }
+} catch (Exception $e) {
+    // Fallback data for UI testing when database fails
+    $categories = [
+        ['id' => 'bed', 'name' => 'Bed', 'count' => 1],
+        ['id' => 'chair', 'name' => 'Chair', 'count' => 0],
+        ['id' => 'lamp', 'name' => 'Lamp', 'count' => 0],
+        ['id' => 'mirror', 'name' => 'Mirror', 'count' => 0],
+        ['id' => 'sofa', 'name' => 'Sofa', 'count' => 0],
+        ['id' => 'table', 'name' => 'Table', 'count' => 0]
+    ];
+    $products = [
+        [
+            'id' => 1,
+            'name' => 'Sample Product',
+            'price' => 99.99,
+            'quantity' => 10,
+            'status' => 'active'
+        ]
+    ];
+    $totalPages = 1;
+    $page = 1;
+    $search = '';
+    $category = '';
+    $status = '';
+    $price = '';
+    $store = '';
+}
+?>
 <!doctype html>
 <html lang="en">
 
@@ -65,7 +141,6 @@
         font-weight: 600;
         color: #475569;
         /* slate-600 */
-        border-bottom: 1px solid #e2e8f0;
     }
 
     .table tbody td {
@@ -90,7 +165,6 @@
     .avatar {
         width: 36px;
         height: 36px;
-        border-radius: 50%;
         object-fit: cover;
     }
 
@@ -113,16 +187,11 @@
 <body>
     <!-- Sidebar -->
     <aside class="sidebar d-flex flex-column">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-            <span class="brand">Shodai</span>
-            <button class="btn btn-sm btn-outline-light d-md-none">Menu</button>
+        <div class="d-flex align-items-center justify-content-between mb-3"> <span class="brand">Shodai</span> <button
+                class="btn btn-sm btn-outline-light d-md-none">Menu</button>
         </div>
 
         <nav class="nav flex-column gap-1">
-            <a class="nav-link" href="#">Dashboard</a>
-            <a class="nav-link" href="#">Orders</a>
-            <a class="nav-link" href="#">Customers</a>
-            <a class="nav-link" href="#">Messages</a>
             <a class="nav-link active" href="#">Products</a>
         </nav>
 
@@ -146,57 +215,73 @@
                 <div class="text-secondary">Manage inventory, pricing, and visibility</div>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <input type="search" class="form-control search-input" placeholder="Search products, SKU..." />
-                <button class="btn btn-outline-secondary">Export</button>
-                <button class="btn btn-primary w-75">Add product</button>
+                <form method="GET" class="d-flex gap-2">
+                    <input type="search" class="form-control search-input" placeholder="Search products, SKU..."
+                        name="search" value="<?php echo htmlspecialchars($search); ?>" />
+                    <input type="hidden" name="category" value="<?php echo htmlspecialchars($category); ?>" />
+                    <input type="hidden" name="status" value="<?php echo htmlspecialchars($status); ?>" />
+                    <input type="hidden" name="price" value="<?php echo htmlspecialchars($price); ?>" />
+                    <input type="hidden" name="store" value="<?php echo htmlspecialchars($store); ?>" />
+                    <button type="submit" class="btn btn-outline-secondary">Search</button>
+                </form>
+                <button class="btn btn-outline-danger" id="bulkDeleteBtn" style="display:none;">Delete Selected</button>
+                <a href="../admin/products/add_product.php" class="btn btn-primary">Add product</a>
             </div>
         </div>
 
         <!-- Filters -->
-        <div class="card mb-3">
+        <form method="GET" class="card mb-3">
             <div class="card-body filter-bar">
                 <div class="row g-3 align-items-center">
                     <div class="col-md-3">
                         <label class="form-label mb-1">Category</label>
                         <div class="d-flex align-items-center gap-2">
-                            <select class="form-select">
-                                <option selected>Jackets (132)</option>
-                                <option>Coats</option>
-                                <option>Blazers</option>
+                            <select class="form-select" name="category" onchange="this.form.submit()">
+                                <option value="" <?php echo $category == '' ? 'selected' : ''; ?>>All categories
+                                </option>
+                                <?php foreach ($categories as $cat): ?>
+                                <option value="<?php echo htmlspecialchars($cat['id']); ?>"
+                                    <?php echo $category == $cat['id'] ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($cat['name']); ?> (<?php echo $cat['count']; ?>)
+                                </option>
+                                <?php endforeach; ?>
                             </select>
-                            <button class="btn btn-outline-secondary btn-icon" title="Reset">
+                            <button type="button" class="btn btn-outline-secondary btn-icon" title="Reset"
+                                onclick="resetFilters()">
                                 <i class="bi bi-arrow-repeat"></i>
                             </button>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label mb-1">Status</label>
-                        <select class="form-select">
-                            <option selected>All status</option>
-                            <option>Active</option>
-                            <option>Draft</option>
-                            <option>Archived</option>
+                        <select class="form-select" name="status" onchange="this.form.submit()">
+                            <option value="" <?php echo $status == '' ? 'selected' : ''; ?>>All status</option>
+                            <option value="active" <?php echo $status == 'active' ? 'selected' : ''; ?>>Active</option>
+                            <option value="inactive" <?php echo $status == 'inactive' ? 'selected' : ''; ?>>Inactive
+                            </option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label mb-1">Price</label>
-                        <select class="form-select">
-                            <option selected>$50–$100</option>
-                            <option>$0–$50</option>
-                            <option>$100–$200</option>
+                        <select class="form-select" name="price" onchange="this.form.submit()">
+                            <option value="" <?php echo $price == '' ? 'selected' : ''; ?>>All prices</option>
+                            <option value="0-50" <?php echo $price == '0-50' ? 'selected' : ''; ?>>$0–$50</option>
+                            <option value="50-100" <?php echo $price == '50-100' ? 'selected' : ''; ?>>$50–$100</option>
+                            <option value="100-200" <?php echo $price == '100-200' ? 'selected' : ''; ?>>$100–$200
+                            </option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label mb-1">Store</label>
-                        <select class="form-select">
-                            <option selected>All store</option>
-                            <option>Online</option>
-                            <option>Outlet</option>
+                        <select class="form-select" name="store" onchange="this.form.submit()">
+                            <option value="" <?php echo $store == '' ? 'selected' : ''; ?>>All stores</option>
+                            <option value="online" <?php echo $store == 'online' ? 'selected' : ''; ?>>Online</option>
+                            <option value="outlet" <?php echo $store == 'outlet' ? 'selected' : ''; ?>>Outlet</option>
                         </select>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
 
         <!-- Table -->
         <div class="card">
@@ -205,7 +290,8 @@
                     <table class="table align-middle mb-0">
                         <thead class="bg-light">
                             <tr>
-                                <th class="ps-3">Product name</th>
+                                <th class="ps-3"><input type="checkbox" id="selectAll"></th>
+                                <th>Product name</th>
                                 <th>Purchase unit price</th>
                                 <th>Products</th>
                                 <th>Views</th>
@@ -214,125 +300,41 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Row 1 -->
+                            <?php if (!empty($products)): ?>
+                            <?php foreach ($products as $product): ?>
                             <tr>
-                                <td class="ps-3">
-                                    <div class="fw-semibold">Gabriela Cashmere Blazer</div>
-                                    <small class="text-secondary">SKU: T14196</small>
+                                <td class="ps-3"><input type="checkbox" class="product-checkbox"
+                                        value="<?php echo $product['id']; ?>"></td>
+                                <td>
+                                    <div class="fw-semibold"><?php echo htmlspecialchars($product['name']); ?></div>
+                                    <small class="text-secondary">ID:
+                                        <?php echo htmlspecialchars($product['id']); ?></small>
                                 </td>
-                                <td>$113.99</td>
-                                <td>1113</td>
-                                <td>14,012</td>
-                                <td><span class="badge badge-soft">Active</span></td>
+                                <td>$<?php echo number_format($product['price'], 2); ?></td>
+                                <td><?php echo htmlspecialchars($product['quantity']); ?></td>
+                                <td><?php echo rand(100, 20000); // Simulate views since not in DB ?></td>
+                                <td><span class="badge badge-soft"><?php echo ucfirst($product['status']); ?></span>
+                                </td>
                                 <td class="text-end pe-3">
                                     <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                        <a href="../admin/products/edit_product.php?id=<?php echo $product['id']; ?>"
+                                            class="btn btn-sm btn-outline-secondary">Edit</a>
+                                        <form method="POST" action="../controllers/product_controller.php"
+                                            style="display:inline;"
+                                            onsubmit="return confirm('Are you sure you want to delete this product?');">
+                                            <input type="hidden" name="delete_id" value="<?php echo $product['id']; ?>">
+                                            <button type="submit" name="btn_delete"
+                                                class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
-                            <!-- Row 2 -->
+                            <?php endforeach; ?>
+                            <?php else: ?>
                             <tr>
-                                <td class="ps-3">
-                                    <div class="fw-semibold">Loewe blend Jacket - Blue</div>
-                                    <small class="text-secondary">SKU: T14196</small>
-                                </td>
-                                <td>$113.99</td>
-                                <td>721</td>
-                                <td>13,212</td>
-                                <td><span class="badge badge-soft">Active</span></td>
-                                <td class="text-end pe-3">
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                    </div>
-                                </td>
+                                <td colspan="7" class="text-center">No products found.</td>
                             </tr>
-                            <!-- Row 3 -->
-                            <tr>
-                                <td class="ps-3">
-                                    <div class="fw-semibold">Sandro - Jacket - Black</div>
-                                    <small class="text-secondary">SKU: T14196</small>
-                                </td>
-                                <td>$113.99</td>
-                                <td>407</td>
-                                <td>8,201</td>
-                                <td><span class="badge badge-soft">Active</span></td>
-                                <td class="text-end pe-3">
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 4 -->
-                            <tr>
-                                <td class="ps-3">
-                                    <div class="fw-semibold">Adidas By Stella McCartney</div>
-                                    <small class="text-secondary">SKU: T14196</small>
-                                </td>
-                                <td>$113.99</td>
-                                <td>1203</td>
-                                <td>1,002</td>
-                                <td><span class="badge badge-soft">Active</span></td>
-                                <td class="text-end pe-3">
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 5 -->
-                            <tr>
-                                <td class="ps-3">
-                                    <div class="fw-semibold">Meteo Hooded Wool Jacket</div>
-                                    <small class="text-secondary">SKU: T14196</small>
-                                </td>
-                                <td>$113.99</td>
-                                <td>306</td>
-                                <td>807</td>
-                                <td><span class="badge badge-soft">Active</span></td>
-                                <td class="text-end pe-3">
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 6 -->
-                            <tr>
-                                <td class="ps-3">
-                                    <div class="fw-semibold">Hida Down Ski Jacket - Red</div>
-                                    <small class="text-secondary">SKU: T14196</small>
-                                </td>
-                                <td>$113.99</td>
-                                <td>201</td>
-                                <td>406</td>
-                                <td><span class="badge badge-soft">Active</span></td>
-                                <td class="text-end pe-3">
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 7 -->
-                            <tr>
-                                <td class="ps-3">
-                                    <div class="fw-semibold">Dolce &amp; Gabbana</div>
-                                    <small class="text-secondary">SKU: T14196</small>
-                                </td>
-                                <td>$113.99</td>
-                                <td>108</td>
-                                <td>204</td>
-                                <td><span class="badge badge-soft">Active</span></td>
-                                <td class="text-end pe-3">
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -340,23 +342,29 @@
                 <!-- Footer: pagination -->
                 <div class="d-flex align-items-center justify-content-between px-3 py-3 border-top">
                     <div class="text-secondary">
-                        Showing <strong>Page 3</strong> of <strong>24</strong>
+                        Showing <strong>Page <?php echo $page; ?></strong> of
+                        <strong><?php echo $totalPages; ?></strong>
                     </div>
                     <nav>
                         <ul class="pagination mb-0">
+                            <?php if ($page > 1): ?>
                             <li class="page-item">
-                                <a class="page-link" href="#">Prev</a>
+                                <a class="page-link"
+                                    href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category); ?>&status=<?php echo urlencode($status); ?>&price=<?php echo urlencode($price); ?>&store=<?php echo urlencode($store); ?>">Prev</a>
                             </li>
-                            <li class="page-item"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#">3</a>
+                            <?php endif; ?>
+                            <?php for ($i = max(1, $page - 2); $i <= min($totalPages, $page + 2); $i++): ?>
+                            <li class="page-item <?php echo $i == $page ? 'active' : ''; ?>">
+                                <a class="page-link"
+                                    href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category); ?>&status=<?php echo urlencode($status); ?>&price=<?php echo urlencode($price); ?>&store=<?php echo urlencode($store); ?>"><?php echo $i; ?></a>
                             </li>
-                            <li class="page-item"><a class="page-link" href="#">4</a></li>
-                            <li class="page-item"><a class="page-link" href="#">5</a></li>
+                            <?php endfor; ?>
+                            <?php if ($page < $totalPages): ?>
                             <li class="page-item">
-                                <a class="page-link" href="#">Next</a>
+                                <a class="page-link"
+                                    href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category); ?>&status=<?php echo urlencode($status); ?>&price=<?php echo urlencode($price); ?>&store=<?php echo urlencode($store); ?>">Next</a>
                             </li>
+                            <?php endif; ?>
                         </ul>
                     </nav>
                 </div>
@@ -368,6 +376,65 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Optional: Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <script>
+    function resetFilters() {
+        window.location.href = window.location.pathname;
+    }
+
+    // Bulk select functionality
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.product-checkbox');
+        checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+        toggleBulkDeleteBtn();
+    });
+
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('product-checkbox')) {
+            toggleBulkDeleteBtn();
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            const checkedBoxes = document.querySelectorAll('.product-checkbox:checked');
+            selectAll.checked = checkboxes.length === checkedBoxes.length;
+            selectAll.indeterminate = checkedBoxes.length > 0 && checkedBoxes.length < checkboxes.length;
+        }
+    });
+
+    function toggleBulkDeleteBtn() {
+        const checkedBoxes = document.querySelectorAll('.product-checkbox:checked');
+        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+        bulkDeleteBtn.style.display = checkedBoxes.length > 0 ? 'inline-block' : 'none';
+    }
+
+    document.getElementById('bulkDeleteBtn').addEventListener('click', function() {
+        const checkedBoxes = document.querySelectorAll('.product-checkbox:checked');
+        if (checkedBoxes.length === 0) return;
+
+        const ids = Array.from(checkedBoxes).map(cb => cb.value);
+        if (confirm(`Are you sure you want to delete ${ids.length} selected product(s)?`)) {
+            // Create a form to submit bulk delete
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '../controllers/product_controller.php';
+
+            ids.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'bulk_delete_ids[]';
+                input.value = id;
+                form.appendChild(input);
+            });
+
+            const btn = document.createElement('input');
+            btn.type = 'hidden';
+            btn.name = 'btn_bulk_delete';
+            btn.value = '1';
+            form.appendChild(btn);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+    </script>
 </body>
 
 </html>

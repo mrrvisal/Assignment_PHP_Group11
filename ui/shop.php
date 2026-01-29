@@ -1,3 +1,24 @@
+<?php
+// ==== Bootstrap page data (categories + selected + products) ====
+
+$selectedCategory = isset($_GET['category']) ? trim($_GET['category']) : '';
+
+// Load categories from JSON once (for tabs & dropdown)
+$jsonPath = __DIR__ . '/../data/category_types.json';
+$categories = [];
+if (file_exists($jsonPath)) {
+    $jsonData = file_get_contents($jsonPath);
+    $data = json_decode($jsonData, true);
+    if (json_last_error() === JSON_ERROR_NONE && isset($data['categories']) && is_array($data['categories'])) {
+        $categories = $data['categories']; // each: ['name' => '...']
+    }
+}
+
+// Get products with optional category filter
+require_once __DIR__ . '/../models/products.php';
+$productModel = new Product();
+$products = $productModel->getAll($selectedCategory);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -201,6 +222,234 @@
         top: 0;
         right: -5px;
     }
+
+    :root {
+        --luxury-black: #1a1a1a;
+        --luxury-gray: #f8f9fa;
+        --luxury-text-muted: #6c757d;
+        --accent-color: #004d40;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        color: var(--luxury-black);
+        overflow-x: hidden;
+    }
+
+    * {
+        color: black;
+        text-decoration: none;
+    }
+
+    .navbar-brand {
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    .hero-section {
+        background-color: #e9ecef;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .navbar .nav-link {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 1px;
+    }
+
+    .navbar i {
+        cursor: pointer;
+    }
+
+    .hero-text {
+        font-weight: 300;
+        letter-spacing: 0.5rem;
+        text-transform: uppercase;
+    }
+
+    .category-grid img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .category-grid .img-wrapper:hover img {
+        transform: scale(1.05);
+    }
+
+    .category-grid .img-wrapper {
+        overflow: hidden;
+        border-radius: 4px;
+    }
+
+    .category-grid .title-block {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .yellow-line {
+        width: 50px;
+        height: 4px;
+        background-color: #ffc107;
+        margin-bottom: 1.5rem;
+    }
+
+    .product-tabs .nav-link {
+        border: none;
+        color: #adb5bd;
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding-bottom: 1rem;
+    }
+
+    .nav-link {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 1px;
+        color: var(--luxury-black) !important;
+        margin: 0 10px;
+    }
+
+    .product-tabs .nav-link.active {
+        color: #000;
+        border-bottom: 2px solid #000;
+    }
+
+    .product-card {
+        border: none;
+        text-align: center;
+    }
+
+    .product-card .img-container {
+        aspect-ratio: 4/5;
+        background-color: #f8f9fa;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+
+    .product-card .img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .img-container img {
+        transform: scale(1.05);
+    }
+
+    .product-title {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+
+    .product-brand {
+        font-size: 0.75rem;
+    }
+
+    .product-price {
+        font-size: 0.9rem;
+    }
+
+    .btn-quick-view {
+        text-align: center;
+        color: #000;
+        text-decoration: none;
+    }
+
+    .btn-quick-view {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        right: 15px;
+        background: white;
+        border: none;
+        padding: 8px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-card:hover .btn-quick-view {
+        opacity: 1;
+    }
+
+    .contact-header {
+        background-color: #e9ecef;
+        padding: 100px 0;
+        text-align: center;
+    }
+
+    .contact-header h1 {
+        font-size: 4rem;
+        font-weight: 700;
+    }
+
+    .footer-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 1.5rem;
+    }
+
+    .footer-links {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer-links li {
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-links a {
+        text-decoration: none;
+        color: #6c757d;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .footer-links a:hover {
+        color: #000;
+    }
+
+    .social-icons i {
+        margin-right: 1rem;
+        color: #adb5bd;
+        cursor: pointer;
+    }
+
+    .social-icons i:hover {
+        color: #000;
+    }
+
+    h1,
+    h2,
+    h3,
+    .navbar-brand {
+        font-family: 'Playfair Display', serif;
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+        font-weight: 700;
+    }
     </style>
 </head>
 
@@ -239,7 +488,7 @@
                         <i data-lucide="shopping-cart" size="20"></i>
                     </a>
 
-                    <a href="login.php" class="text-dark">
+                    <a href="../views/auth/login.php" class="text-dark">
                         <i data-lucide="user" size="20"></i>
                     </a>
                 </div>
@@ -287,148 +536,147 @@
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main class="container my-5">
-        <!-- Filter Tabs -->
-        <div class="d-flex justify-content-center filter-tabs gap-2 flex-wrap" id="categoryFilter">
-            <button class="filter-btn active" data-category="All">All</button>
-            <button class="filter-btn" data-category="Bed">Bed</button>
-            <button class="filter-btn" data-category="Sofa">Sofa</button>
-            <button class="filter-btn" data-category="Chair">Chair</button>
-            <button class="filter-btn" data-category="Table">Table</button>
-            <button class="filter-btn" data-category="Mirror">Mirror</button>
+    <!-- Products -->
+    <section class="container py-5">
+
+        <!-- Tabs -->
+        <ul class="nav product-tabs justify-content-center mb-5 border-bottom">
+            <li class="nav-item">
+                <a class="nav-link <?= $selectedCategory === '' ? 'active' : '' ?>" href="?">All</a>
+            </li>
+            <?php foreach ($categories as $cat): 
+                $name = isset($cat['name']) ? (string)$cat['name'] : '';
+                $isActive = ($selectedCategory === $name) ? 'active' : '';
+            ?>
+            <li class="nav-item">
+                <a class="nav-link <?= $isActive ?>" href="?category=<?= urlencode($name) ?>">
+                    <?= htmlspecialchars($name) ?>
+                </a>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+
+        <!-- Filters -->
+        <div class="row g-3 mb-5">
+            <!-- Category dropdown (auto-submits via GET) -->
+            <div class="col-md-3">
+                <form id="filtersForm" method="get" class="m-0">
+                    <select name="category"
+                        class="form-select form-select-sm text-uppercase fw-bold text-muted letter-spacing-1"
+                        onchange="document.getElementById('filtersForm').submit();">
+                        <option value="">All Categories</option>
+                        <?php foreach ($categories as $cat): 
+                            $name = isset($cat['name']) ? (string)$cat['name'] : '';
+                            $isSelected = ($selectedCategory !== '' && $selectedCategory === $name) ? 'selected' : '';
+                        ?>
+                        <option value="<?= htmlspecialchars($name) ?>" <?= $isSelected ?>>
+                            <?= htmlspecialchars($name) ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                </form>
+            </div>
+
+            <!-- Future filters: color/size/price (placeholders) -->
+            <div class="col-md-3">
+                <select class="form-select form-select-sm text-uppercase fw-bold text-muted letter-spacing-1">
+                    <option selected>Color</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select form-select-sm text-uppercase fw-bold text-muted letter-spacing-1">
+                    <option selected>Size</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select form-select-sm text-uppercase fw-bold text-muted letter-spacing-1">
+                    <option selected>Price</option>
+                </select>
+            </div>
         </div>
 
-        <!-- Product Grid -->
-        <?php
-require_once __DIR__ . '/../models/products.php';
-
-$productModel = new Product();
-$products = $productModel->getAll();
-?>
-
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <!-- Grid -->
+        <div class="row g-5">
             <?php if (!empty($products)): ?>
             <?php foreach ($products as $product): ?>
-
-            <div class="col">
-                <div class="product-card" id="<?= htmlspecialchars($product['id']) ?>"
-                    data-quantity="<?= htmlspecialchars($product['quantity']) ?>"
-                    data-category="<?= htmlspecialchars($product['category']) ?>">
-
-                    <div class="product-img-container">
+            <div class="col-sm-6 col-md-4 col-lg-3">
+                <div class="product-card">
+                    <div class="img-container">
                         <?php
-                        $images = json_decode($product['images'], true);
-                        if (!empty($images)) {
-                            $firstImage = reset($images);
-                            echo '<img src="../assets/images/products/' . htmlspecialchars($firstImage) . '" 
-                                  alt="' . htmlspecialchars($product['name']) . '">';
-                        } else {
-                            echo '<img src="../assets/images/no-image.png" 
-                                  alt="No image">';
-                        }
-                        ?>
-                    </div>
-
-                    <div class="text-center">
-                        <h3 class="product-title">
-                            <?= htmlspecialchars($product['name']) ?>
-                        </h3>
-
-                        <div class="product-price">
-                            <?php if (!empty($product['old_price'])): ?>
-                            <span class="old-price">
-                                $<?= htmlspecialchars($product['old_price']) ?>
-                            </span>
-                            <?php endif; ?>
-
-                            <span class="new-price">
-                                $<?= htmlspecialchars($product['price']) ?>
-                            </span>
-                        </div>
-
-                        <a href="buy.php?id=<?= htmlspecialchars($product['id']) ?>"
-                            class="btn btn-dark rounded-0 px-3 py-1 mt-2 small">
+                            $firstImageTag = '<img src="../assets/images/no-image.png" alt="No image">';
+                            if (!empty($product['images'])) {
+                                $images = json_decode($product['images'], true);
+                                if (json_last_error() === JSON_ERROR_NONE && is_array($images) && !empty($images)) {
+                                    $firstImage = reset($images);
+                                    $firstImageTag = '<img src="../assets/images/products/' . htmlspecialchars($firstImage) . '" alt="' . htmlspecialchars($product['name']) . '">';
+                                }
+                            }
+                            echo $firstImageTag;
+                            ?>
+                        <a href="buy.php?id=<?= htmlspecialchars($product['id']) ?>" class="btn-quick-view">
                             Quick View
                         </a>
                     </div>
 
+                    <h6 class="product-title mt-3"><?= htmlspecialchars($product['name']) ?></h6>
+                    <p class="product-brand small text-muted mb-1"><?= htmlspecialchars($product['brand']) ?></p>
+                    <p class="product-price fw-bold">$<?= htmlspecialchars($product['price']) ?></p>
                 </div>
             </div>
-
             <?php endforeach; ?>
             <?php else: ?>
-            <p class="text-center">No products found.</p>
+            <div class="col-12">
+                <p class="text-center text-muted">No products found.</p>
+            </div>
             <?php endif; ?>
         </div>
-
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-5">
-            <nav>
-                <ul class="pagination">
-                    <li class="page-item active"><a class="page-link rounded-0 bg-dark border-dark text-white"
-                            href="#">1</a></li>
-                    <li class="page-item"><a class="page-link rounded-0 border-muted text-dark" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link rounded-0 border-muted text-dark" href="#"><i
-                                class="bi bi-chevron-right"></i></a></li>
-                </ul>
-            </nav>
-        </div>
+    </section>
     </main>
 
     <!-- Footer -->
-    <footer>
+    <footer class="border-top py-5">
         <div class="container">
             <div class="row g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="navbar-brand mb-4 d-block">LUXURY</div>
-                    <p class="small text-muted mb-4">Crafting environments that inspire and endure. Our furniture is
-                        made with the finest materials and timeless craftsmanship.</p>
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="navbar-brand mb-4">LUXURY</h5>
                     <div class="d-flex gap-3 text-muted">
-                        <i class="bi bi-instagram cursor-pointer"></i>
-                        <i class="bi bi-facebook cursor-pointer"></i>
-                        <i class="bi bi-twitter-x cursor-pointer"></i>
-                        <i class="bi bi-linkedin cursor-pointer"></i>
+                        <i data-lucide="share-2" size="18"></i>
+                        <i data-lucide="globe" size="18"></i>
+                        <i data-lucide="youtube" size="18"></i>
+                        <i data-lucide="linkedin" size="18"></i>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="footer-heading">Shop</h4>
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="footer-title">Use Cases</h6>
                     <ul class="footer-links">
-                        <li><a href="#">Living Room</a></li>
-                        <li><a href="#">Bedroom</a></li>
-                        <li><a href="#">Office</a></li>
-                        <li><a href="#">Outdoor</a></li>
+                        <li><a href="#">UI design</a></li>
+                        <li><a href="#">UX design</a></li>
+                        <li><a href="#">Wireframing</a></li>
+                        <li><a href="#">Diagramming</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="footer-heading">Support</h4>
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="footer-title">Explore</h6>
                     <ul class="footer-links">
-                        <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Returns & Refunds</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Design</a></li>
+                        <li><a href="#">Prototyping</a></li>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Collaboration</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="footer-heading">Newsletter</h4>
-                    <p class="small text-muted mb-3">Subscribe to get special offers and once-in-a-lifetime deals.</p>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control rounded-0 border-end-0 small" placeholder="Your email">
-                        <button class="btn btn-dark rounded-0 px-3" type="button">Join</button>
-                    </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="footer-title">Resources</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Best practices</a></li>
+                        <li><a href="#">Support</a></li>
+                        <li><a href="#">Developers</a></li>
+                    </ul>
                 </div>
             </div>
-            <hr class="my-5 opacity-25">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="small text-muted mb-0">© 2024 Luxury Furniture. All Rights Reserved.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" height="15"
-                        class="me-3 grayscale opacity-50" alt="paypal">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" height="20"
-                        class="grayscale opacity-50" alt="mastercard">
-                </div>
+            <div class="mt-5 text-center">
+                <p class="text-muted text-uppercase" style="font-size: 0.6rem; letter-spacing: 2px;">© 2025 Luxury
+                    Furniture. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
@@ -437,32 +685,6 @@ $products = $productModel->getAll();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     lucide.createIcons();
-
-    // Category filter functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        const productCards = document.querySelectorAll('.product-card');
-
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const category = this.getAttribute('data-category');
-
-                // Update active button
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-
-                // Filter products
-                productCards.forEach(card => {
-                    const productCategory = card.getAttribute('data-category');
-                    if (category === 'All' || productCategory === category) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        });
-    });
     </script>
 </body>
 

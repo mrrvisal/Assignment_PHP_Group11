@@ -1,3 +1,24 @@
+<?php
+// ==== Bootstrap page data (categories + selected + products) ====
+
+$selectedCategory = isset($_GET['category']) ? trim($_GET['category']) : '';
+
+// Load categories from JSON once (for tabs & dropdown)
+$jsonPath = __DIR__ . '/../data/category_types.json';
+$categories = [];
+if (file_exists($jsonPath)) {
+    $jsonData = file_get_contents($jsonPath);
+    $data = json_decode($jsonData, true);
+    if (json_last_error() === JSON_ERROR_NONE && isset($data['categories']) && is_array($data['categories'])) {
+        $categories = $data['categories']; // each: ['name' => '...']
+    }
+}
+
+// Get products with optional category filter
+require_once __DIR__ . '/../models/products.php';
+$productModel = new Product();
+$products = $productModel->getAll($selectedCategory);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <!-- price brand type tranding -->
@@ -11,11 +32,10 @@
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Playfair Display for headings -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <!-- Lucide Icons (via CDN) -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
-    </script>
     <style>
     :root {
         --luxury-black: #1a1a1a;
@@ -29,7 +49,6 @@
         color: var(--luxury-black);
         overflow-x: hidden;
     }
-
 
     * {
         color: black;
@@ -116,13 +135,6 @@
     .product-tabs .nav-link.active {
         color: #000;
         border-bottom: 2px solid #000;
-    }
-
-    .navbar .nav-link {
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        font-weight: 500;
-        letter-spacing: 1px;
     }
 
     .product-card {
@@ -298,50 +310,13 @@
     </nav>
 
     <!-- Hero -->
-    <section class="hero-section">
-        <!-- Hero Carousel -->
-        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
-            </div>
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="container h-100 d-flex align-items-center">
-                        <div class="carousel-caption d-none d-md-block">
-                            <span class="text-uppercase text-muted ls-1 small fw-bold">New Collection 2024</span>
-                            <h2>Minimalist Living</h2>
-                            <p class="w-50">Discover our new range of artisan crafted furniture designed for the modern
-                                sanctuary.</p>
-                            <button class="btn btn-dark rounded-0 px-4 py-2 mt-3 text-uppercase small ls-1">Discover
-                                More</button>
-                        </div>
-                        <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1600&q=80"
-                            class="d-block w-100 opacity-25 position-absolute top-0 start-0 h-100"
-                            style="object-fit:cover; z-index:-1" alt="...">
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="container h-100 d-flex align-items-center">
-                        <div class="carousel-caption d-none d-md-block">
-                            <span class="text-uppercase text-muted ls-1 small fw-bold">Scandinavian Design</span>
-                            <h2>The Art of Comfort</h2>
-                            <p class="w-50">Functional elegance meets timeless aesthetics in every piece we create.</p>
-                            <button class="btn btn-dark rounded-0 px-4 py-2 mt-3 text-uppercase small ls-1">Shop
-                                Now</button>
-                        </div>
-                        <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1600&q=80"
-                            class="d-block w-100 opacity-25 position-absolute top-0 start-0 h-100"
-                            style="object-fit:cover; z-index:-1" alt="...">
-                    </div>
-                </div>
-            </div>
-        </div>
+    <section class="container-fluid p-0">
+        <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1600&q=80"
+            class="w-100" style="height: 60vh; object-fit: cover;">
     </section>
 
     <!-- Categories -->
-    <section class="container py-5 mt-5">
+    <section class="container py-5 mt-1">
         <div class="row g-4 category-grid">
             <!-- Title Column -->
             <div class="col-lg-3 title-block">
@@ -356,7 +331,7 @@
                         <div class="text-muted" style="font-size: 0.7rem;">Unique products</div>
                     </div>
                 </div>
-                <a href="#" class="text-dark fw-bold text-uppercase small text-decoration-none">
+                <a href="?" class="text-dark fw-bold text-uppercase small text-decoration-none">
                     All Categories <i data-lucide="arrow-right" size="14" class="ms-1"></i>
                 </a>
             </div>
@@ -364,29 +339,31 @@
             <!-- Squares Row 1 -->
             <div class="col-lg-3">
                 <div class="img-wrapper">
-                    <img src="https://picsum.photos/seed/cat1/500/500" alt="Category">
+                    <img src="https://i.pinimg.com/1200x/4d/0f/59/4d0f59f91788e20be1a6e4e0a74fc5a4.jpg" alt="Category">
                 </div>
             </div>
             <div class="col-lg-3">
                 <div class="img-wrapper">
-                    <img src="https://picsum.photos/seed/cat2/500/500" alt="Category">
+                    <img src="https://i.pinimg.com/1200x/82/aa/3f/82aa3ff5adb00734adbc30fca9c93c35.jpg" alt="Category">
                 </div>
             </div>
             <div class="col-lg-3">
                 <div class="img-wrapper">
-                    <img src="https://picsum.photos/seed/cat3/500/500" alt="Category">
+                    <img src="https://i.pinimg.com/1200x/84/cb/57/84cb57b1d01e7858b22f508af9b6cf7c.jpg" alt="Category">
                 </div>
             </div>
 
             <!-- Rectangles Row 2 -->
             <div class="col-lg-6">
                 <div class="img-wrapper" style="height: 300px;">
-                    <img src="https://picsum.photos/seed/cat4/1000/600" alt="Category" style="height: 300px;">
+                    <img src="https://i.pinimg.com/1200x/ff/76/f1/ff76f105267e87566d1d476d380cf445.jpg" alt="Category"
+                        style="height: 300px;">
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="img-wrapper" style="height: 300px;">
-                    <img src="https://picsum.photos/seed/cat5/1000/600" alt="Category" style="height: 300px;">
+                    <img src="https://i.pinimg.com/1200x/4a/87/57/4a8757699a1cfd62c20b50998a342c32.jpg" alt="Category"
+                        style="height: 300px;">
                 </div>
             </div>
         </div>
@@ -394,30 +371,46 @@
 
     <!-- Products -->
     <section class="container py-5">
+
         <!-- Tabs -->
-        <td>
-        </td>
         <ul class="nav product-tabs justify-content-center mb-5 border-bottom">
-            <li class="nav-item"><button class="nav-link">All</button></li>
-            <?php
-                    $jsonPath = __DIR__ . '/../data/category_types.json';
-                    $jsonData = file_get_contents($jsonPath);
-                    $data = json_decode($jsonData, true);
-                    ?>
-            <?php foreach ($data['categories'] as $cat): ?>
-            <li class="nav-item"><button class="nav-link">
-                    <?= htmlspecialchars($cat['name'])
-                    ?></button></li>
+            <li class="nav-item">
+                <a class="nav-link <?= $selectedCategory === '' ? 'active' : '' ?>" href="?">All</a>
+            </li>
+            <?php foreach ($categories as $cat): 
+                $name = isset($cat['name']) ? (string)$cat['name'] : '';
+                $isActive = ($selectedCategory === $name) ? 'active' : '';
+            ?>
+            <li class="nav-item">
+                <a class="nav-link <?= $isActive ?>" href="?category=<?= urlencode($name) ?>">
+                    <?= htmlspecialchars($name) ?>
+                </a>
+            </li>
             <?php endforeach; ?>
         </ul>
 
         <!-- Filters -->
         <div class="row g-3 mb-5">
+            <!-- Category dropdown (auto-submits via GET) -->
             <div class="col-md-3">
-                <select class="form-select form-select-sm text-uppercase fw-bold text-muted letter-spacing-1">
-                    <option selected>Categories</option>
-                </select>
+                <form id="filtersForm" method="get" class="m-0">
+                    <select name="category"
+                        class="form-select form-select-sm text-uppercase fw-bold text-muted letter-spacing-1"
+                        onchange="document.getElementById('filtersForm').submit();">
+                        <option value="">All Categories</option>
+                        <?php foreach ($categories as $cat): 
+                            $name = isset($cat['name']) ? (string)$cat['name'] : '';
+                            $isSelected = ($selectedCategory !== '' && $selectedCategory === $name) ? 'selected' : '';
+                        ?>
+                        <option value="<?= htmlspecialchars($name) ?>" <?= $isSelected ?>>
+                            <?= htmlspecialchars($name) ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                </form>
             </div>
+
+            <!-- Future filters: color/size/price (placeholders) -->
             <div class="col-md-3">
                 <select class="form-select form-select-sm text-uppercase fw-bold text-muted letter-spacing-1">
                     <option selected>Color</option>
@@ -436,61 +429,39 @@
         </div>
 
         <!-- Grid -->
-        <?php
-require_once __DIR__ . '/../models/products.php';
-
-$productModel = new Product();
-$products = $productModel->getAll();
-?>
-
         <div class="row g-5">
             <?php if (!empty($products)): ?>
             <?php foreach ($products as $product): ?>
-
             <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="product-card">
-
                     <div class="img-container">
                         <?php
-            $images = json_decode($product['images'], true);
-            if (!empty($images)) {
-                $firstImage = reset($images);
-                echo '<img src="../assets/images/products/' . htmlspecialchars($firstImage) . '" 
-                      alt="' . htmlspecialchars($product['name']) . '">';
-            } else {
-                echo '<img src="../assets/images/no-image.png" alt="No image">';
-            }
-            ?>
-
+                            $firstImageTag = '<img src="../assets/images/no-image.png" alt="No image">';
+                            if (!empty($product['images'])) {
+                                $images = json_decode($product['images'], true);
+                                if (json_last_error() === JSON_ERROR_NONE && is_array($images) && !empty($images)) {
+                                    $firstImage = reset($images);
+                                    $firstImageTag = '<img src="../assets/images/products/' . htmlspecialchars($firstImage) . '" alt="' . htmlspecialchars($product['name']) . '">';
+                                }
+                            }
+                            echo $firstImageTag;
+                            ?>
                         <a href="buy.php?id=<?= htmlspecialchars($product['id']) ?>" class="btn-quick-view">
                             Quick View
                         </a>
                     </div>
 
-                    <h6 class="product-title mt-3">
-                        <?= htmlspecialchars($product['name']) ?>
-                    </h6>
-
-                    <p class="product-brand small text-muted mb-1">
-                        <?= htmlspecialchars($product['brand']) ?>
-                    </p>
-
-                    <p class="product-price fw-bold">
-                        $<?= htmlspecialchars($product['price']) ?>
-                    </p>
-
+                    <h6 class="product-title mt-3"><?= htmlspecialchars($product['name']) ?></h6>
+                    <p class="product-brand small text-muted mb-1"><?= htmlspecialchars($product['brand']) ?></p>
+                    <p class="product-price fw-bold">$<?= htmlspecialchars($product['price']) ?></p>
                 </div>
             </div>
-
             <?php endforeach; ?>
             <?php else: ?>
-            <p>No products found.</p>
+            <div class="col-12">
+                <p class="text-center text-muted">No products found.</p>
+            </div>
             <?php endif; ?>
-        </div>
-
-        </div>
-        </div>
-        </div>
         </div>
     </section>
 
@@ -549,9 +520,10 @@ $products = $productModel->getAll();
                 </div>
                 <div class="bg-light d-flex align-items-center justify-content-center"
                     style="height: 300px; position: relative;">
-                    <img src="https://picsum.photos/seed/map/800/600"
-                        class="w-100 h-100 object-fit-cover opacity-50 grayscale" alt="Map">
-                    <div class="position-absolute text-uppercase text-secondary h2 fw-light letter-spacing-2">Map</div>
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3908.502986608757!2d104.92736972452724!3d11.587444543712145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31095157d40fffff%3A0x7545c526597af0d3!2zTWVkaWNhbCBCdWlsZGluZyAoTm9ydG9uIFVuaXZlcnNpdHkpIOGeouGeguGetuGemkg!5e0!3m2!1sen!2skh!4v1769624433991!5m2!1sen!2skh"
+                        width="620" height="300" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
                 </div>
             </div>
         </div>
@@ -605,8 +577,10 @@ $products = $productModel->getAll();
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap 5 JS Bundle (single, matching CSS version) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+    </script>
     <script>
     lucide.createIcons();
     </script>

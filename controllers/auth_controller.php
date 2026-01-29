@@ -90,7 +90,7 @@ class AuthController
 
             User::updateLastLogin($user['id']);
 
-            header("Location: ../index.php");
+            header("Location: ../ui/index.php");
             exit();
         } else {
             echo "<script>alert('Invalid email or password.'); window.location.href='../views/auth/login.php';</script>";

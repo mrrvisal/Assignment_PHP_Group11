@@ -29,6 +29,7 @@
         overflow-x: hidden;
     }
 
+
     h1,
     h2,
     h3,
@@ -122,17 +123,39 @@
         color: #fff;
     }
 
+    /* Footer */
     footer {
-        border-top: 1px solid var(--luxury-border);
+        background-color: white;
+        padding: 5rem 0 2rem;
+        border-top: 1px solid #eee;
+        margin-top: 4rem;
     }
 
-    footer a {
-        color: var(--luxury-text);
+    .footer-heading {
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+    }
+
+    .footer-links {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer-links li {
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-links a {
+        color: var(--luxury-text-muted);
         text-decoration: none;
+        font-size: 0.85rem;
+        transition: color 0.3s;
     }
 
-    footer a:hover {
-        text-decoration: underline;
+    .footer-links a:hover {
+        color: var(--luxury-black);
     }
     </style>
 </head>
@@ -172,7 +195,7 @@
                         <i data-lucide="shopping-cart" size="20"></i>
                     </a>
 
-                    <a href="login.php" class="text-dark">
+                    <a href="../views/auth/login.php" class="text-dark">
                         <i data-lucide="user" size="20"></i>
                     </a>
                 </div>
@@ -227,7 +250,10 @@
                             <p class="mb-1 fw-semibold">Your Brand Name</p>
                             <p class="mb-1">123 Main Street</p>
                             <p class="mb-3">Phnom Penh, Cambodia</p>
-                            <div class="map-placeholder">Map</div>
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3908.502986608757!2d104.92736972452724!3d11.587444543712145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31095157d40fffff%3A0x7545c526597af0d3!2zTWVkaWNhbCBCdWlsZGluZyAoTm9ydG9uIFVuaXZlcnNpdHkpIOGeouGeguGetuGemkg!5e0!3m2!1sen!2skh!4v1769624433991!5m2!1sen!2skh"
+                                width="590" height="310" style="border:0;" allowfullscreen="" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"></iframe>
                         </div>
                     </div>
                 </div>
@@ -247,44 +273,49 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-5 mt-4 bg-white">
+    <footer class="border-top py-5">
         <div class="container">
             <div class="row g-4">
-                <div class="col-md-4">
-                    <h5 class="mb-3">Use cases</h5>
-                    <ul class="list-unstyled">
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="navbar-brand mb-4">LUXURY</h5>
+                    <div class="d-flex gap-3 text-muted">
+                        <i data-lucide="share-2" size="18"></i>
+                        <i data-lucide="globe" size="18"></i>
+                        <i data-lucide="youtube" size="18"></i>
+                        <i data-lucide="linkedin" size="18"></i>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="footer-title">Use Cases</h6>
+                    <ul class="footer-links">
                         <li><a href="#">UI design</a></li>
                         <li><a href="#">UX design</a></li>
                         <li><a href="#">Wireframing</a></li>
-                        <li><a href="#">Brainstorming</a></li>
-                        <li><a href="#">Online whiteboard</a></li>
-                        <li><a href="#">Team collaboration</a></li>
+                        <li><a href="#">Diagramming</a></li>
                     </ul>
                 </div>
-                <div class="col-md-4">
-                    <h5 class="mb-3">Explore</h5>
-                    <ul class="list-unstyled">
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="footer-title">Explore</h6>
+                    <ul class="footer-links">
                         <li><a href="#">Design</a></li>
                         <li><a href="#">Prototyping</a></li>
-                        <li><a href="#">Development features</a></li>
-                        <li><a href="#">Design systems</a></li>
-                        <li><a href="#">Collaboration features</a></li>
-                        <li><a href="#">Plugins</a></li>
-                        <li><a href="#">Figma community</a></li>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Collaboration</a></li>
                     </ul>
                 </div>
-                <div class="col-md-4">
-                    <h5 class="mb-3">Resources</h5>
-                    <ul class="list-unstyled">
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="footer-title">Resources</h6>
+                    <ul class="footer-links">
                         <li><a href="#">Blog</a></li>
                         <li><a href="#">Best practices</a></li>
-                        <li><a href="#">Colors</a></li>
-                        <li><a href="#">Color wheel</a></li>
                         <li><a href="#">Support</a></li>
-                        <li><a href="#">Development</a></li>
-                        <li><a href="#">Resource library</a></li>
+                        <li><a href="#">Developers</a></li>
                     </ul>
                 </div>
+            </div>
+            <div class="mt-5 text-center">
+                <p class="text-muted text-uppercase" style="font-size: 0.6rem; letter-spacing: 2px;">© 2025 Luxury
+                    Furniture. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
